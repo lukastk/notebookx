@@ -229,6 +229,7 @@ dependencies = [
 name = "notebookx-py"
 version = "0.1.0"
 dependencies = [
+ "nbx",
  "notebookx",
  "pyo3",
 ]

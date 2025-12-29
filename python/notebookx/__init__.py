@@ -22,6 +22,7 @@ from notebookx._notebookx import (
     CleanOptions,
     convert,
     clean_notebook,
+    run_cli,
     NotebookError,
 )
 
@@ -31,6 +32,7 @@ __all__ = [
     "CleanOptions",
     "convert",
     "clean_notebook",
+    "run_cli",
     "NotebookError",
 ]
 

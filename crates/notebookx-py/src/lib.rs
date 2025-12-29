@@ -457,6 +457,21 @@ fn clean_notebook(
     Ok(())
 }
 
+/// Run the nbx CLI with the given arguments.
+///
+/// This function runs the Rust CLI directly, providing the same functionality
+/// as the standalone `nbx` binary.
+///
+/// Args:
+///     args: Command-line arguments (including the program name as first element).
+///
+/// Returns:
+///     Exit code (0 for success, non-zero for errors).
+#[pyfunction]
+fn run_cli(args: Vec<String>) -> i32 {
+    nbx::run(args)
+}
+
 /// Python module for notebookx.
 #[pymodule]
 fn _notebookx(m: &Bound<'_, PyModule>) -> PyResult<()> {
@@ -465,6 +480,7 @@ fn _notebookx(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Notebook>()?;
     m.add_function(wrap_pyfunction!(convert, m)?)?;
     m.add_function(wrap_pyfunction!(clean_notebook, m)?)?;
+    m.add_function(wrap_pyfunction!(run_cli, m)?)?;
     m.add("NotebookError", m.py().get_type::<NotebookError>())?;
     Ok(())
 }

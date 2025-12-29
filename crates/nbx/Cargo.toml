@@ -6,6 +6,10 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 
+[lib]
+name = "nbx"
+path = "src/lib.rs"
+
 [[bin]]
 name = "nbx"
 path = "src/main.rs"

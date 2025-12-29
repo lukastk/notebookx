@@ -219,5 +219,19 @@ def clean_notebook(
     """
     ...
 
+def run_cli(args: List[str]) -> int:
+    """Run the nbx CLI with the given arguments.
+
+    This function runs the Rust CLI directly, providing the same functionality
+    as the standalone `nbx` binary.
+
+    Args:
+        args: Command-line arguments (including the program name as first element).
+
+    Returns:
+        Exit code (0 for success, non-zero for errors).
+    """
+    ...
+
 __version__: str
 __all__: List[str]
