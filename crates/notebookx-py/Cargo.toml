@@ -1,0 +1,15 @@
+[package]
+name = "notebookx-py"
+description = "Python bindings for notebookx"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lib]
+name = "_notebookx"
+crate-type = ["cdylib"]
+
+[dependencies]
+notebookx = { workspace = true }
+pyo3 = { workspace = true }
