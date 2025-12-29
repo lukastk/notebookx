@@ -50,3 +50,9 @@ python_files = ["test_*.py"]
 python_version = "3.8"
 warn_return_any = true
 warn_unused_configs = true
+
+[dependency-groups]
+dev = [
+    "jupyterlab>=4.3.8",
+    "maturin>=1.10.2",
+]
