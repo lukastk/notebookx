@@ -16,7 +16,8 @@ pub enum Output {
     /// Result of evaluating the last expression in a cell.
     ExecuteResult {
         /// Execution count matching the cell's execution count.
-        execution_count: u32,
+        /// Can be None if cleaned or if the cell hasn't been executed.
+        execution_count: Option<u32>,
         /// MIME bundle of output representations.
         data: MimeBundle,
         /// Output metadata.

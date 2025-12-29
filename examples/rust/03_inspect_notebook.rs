@@ -64,7 +64,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 println!("  Output {}:", j);
                 match output {
                     notebookx::Output::ExecuteResult { data, execution_count, .. } => {
-                        println!("    Type: ExecuteResult (execution_count: {})", execution_count);
+                        println!("    Type: ExecuteResult (execution_count: {:?})", execution_count);
                         print_mime_bundle(data);
                     }
                     notebookx::Output::DisplayData { data, .. } => {

@@ -74,6 +74,8 @@ def cmd_clean(args: argparse.Namespace) -> int:
             remove_cell_metadata=args.remove_cell_metadata,
             remove_notebook_metadata=args.remove_notebook_metadata,
             remove_kernel_info=args.remove_kernel_info,
+            remove_output_metadata=args.remove_output_metadata,
+            remove_output_execution_counts=args.remove_output_execution_counts,
         )
 
         cleaned = nb.clean(options)
@@ -122,6 +124,8 @@ def main() -> int:
     clean_parser.add_argument("--remove-cell-metadata", action="store_true", help="Remove cell metadata")
     clean_parser.add_argument("--remove-notebook-metadata", action="store_true", help="Remove notebook metadata")
     clean_parser.add_argument("--remove-kernel-info", action="store_true", help="Remove kernel info")
+    clean_parser.add_argument("--remove-output-metadata", action="store_true", help="Remove metadata from outputs")
+    clean_parser.add_argument("--remove-output-execution-counts", action="store_true", help="Remove execution counts from output results")
 
     args = parser.parse_args()
 

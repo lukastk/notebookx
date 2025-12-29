@@ -92,6 +92,14 @@ enum Commands {
         #[arg(long)]
         preserve_cell_ids: bool,
 
+        /// Remove metadata from outputs (ExecuteResult, DisplayData)
+        #[arg(long)]
+        remove_output_metadata: bool,
+
+        /// Remove execution counts from output results
+        #[arg(long)]
+        remove_output_execution_counts: bool,
+
         /// Keep only these metadata keys (comma-separated)
         #[arg(long, value_delimiter = ',')]
         keep_only: Option<Vec<String>>,
@@ -138,6 +146,8 @@ fn main() -> ExitCode {
             remove_notebook_metadata,
             remove_kernel_info,
             preserve_cell_ids,
+            remove_output_metadata,
+            remove_output_execution_counts,
             keep_only,
         } => run_clean(
             &input,
@@ -149,6 +159,8 @@ fn main() -> ExitCode {
             remove_notebook_metadata,
             remove_kernel_info,
             preserve_cell_ids,
+            remove_output_metadata,
+            remove_output_execution_counts,
             keep_only,
         ),
     };
@@ -294,6 +306,8 @@ fn run_clean(
     remove_notebook_metadata: bool,
     remove_kernel_info: bool,
     preserve_cell_ids: bool,
+    remove_output_metadata: bool,
+    remove_output_execution_counts: bool,
     keep_only: Option<Vec<String>>,
 ) -> Result<(), CliError> {
     let format = NotebookFormat::from_path(input).ok_or_else(|| {
@@ -328,6 +342,8 @@ fn run_clean(
         remove_notebook_metadata,
         remove_kernel_info,
         preserve_cell_ids,
+        remove_output_metadata,
+        remove_output_execution_counts,
         allowed_cell_metadata_keys: allowed_keys.clone(),
         allowed_notebook_metadata_keys: allowed_keys,
     };

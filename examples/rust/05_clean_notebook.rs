@@ -35,7 +35,7 @@ fn main() {
         source: notebookx::MultilineString::from_string("2 + 2"),
         execution_count: Some(2),
         outputs: vec![notebookx::Output::ExecuteResult {
-            execution_count: 2,
+            execution_count: Some(2),
             data: {
                 let mut data = notebookx::MimeBundle::new();
                 data.insert(

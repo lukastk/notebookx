@@ -64,6 +64,14 @@ pub struct CleanOptions {
     #[pyo3(get, set)]
     pub preserve_cell_ids: bool,
 
+    /// Remove metadata from outputs (ExecuteResult, DisplayData).
+    #[pyo3(get, set)]
+    pub remove_output_metadata: bool,
+
+    /// Remove execution counts from output results.
+    #[pyo3(get, set)]
+    pub remove_output_execution_counts: bool,
+
     /// Allowed cell metadata keys (None means all allowed).
     #[pyo3(get, set)]
     pub allowed_cell_metadata_keys: Option<Vec<String>>,
@@ -83,6 +91,8 @@ impl CleanOptions {
         remove_notebook_metadata = false,
         remove_kernel_info = false,
         preserve_cell_ids = false,
+        remove_output_metadata = false,
+        remove_output_execution_counts = false,
         allowed_cell_metadata_keys = None,
         allowed_notebook_metadata_keys = None,
     ))]
@@ -93,6 +103,8 @@ impl CleanOptions {
         remove_notebook_metadata: bool,
         remove_kernel_info: bool,
         preserve_cell_ids: bool,
+        remove_output_metadata: bool,
+        remove_output_execution_counts: bool,
         allowed_cell_metadata_keys: Option<Vec<String>>,
         allowed_notebook_metadata_keys: Option<Vec<String>>,
     ) -> Self {
@@ -103,6 +115,8 @@ impl CleanOptions {
             remove_notebook_metadata,
             remove_kernel_info,
             preserve_cell_ids,
+            remove_output_metadata,
+            remove_output_execution_counts,
             allowed_cell_metadata_keys,
             allowed_notebook_metadata_keys,
         }
@@ -128,6 +142,8 @@ impl CleanOptions {
             remove_notebook_metadata: true,
             remove_kernel_info: true,
             preserve_cell_ids: false,
+            remove_output_metadata: true,
+            remove_output_execution_counts: true,
             allowed_cell_metadata_keys: None,
             allowed_notebook_metadata_keys: None,
         }
@@ -135,13 +151,15 @@ impl CleanOptions {
 
     fn __repr__(&self) -> String {
         format!(
-            "CleanOptions(remove_outputs={}, remove_execution_counts={}, remove_cell_metadata={}, remove_notebook_metadata={}, remove_kernel_info={}, preserve_cell_ids={})",
+            "CleanOptions(remove_outputs={}, remove_execution_counts={}, remove_cell_metadata={}, remove_notebook_metadata={}, remove_kernel_info={}, preserve_cell_ids={}, remove_output_metadata={}, remove_output_execution_counts={})",
             self.remove_outputs,
             self.remove_execution_counts,
             self.remove_cell_metadata,
             self.remove_notebook_metadata,
             self.remove_kernel_info,
             self.preserve_cell_ids,
+            self.remove_output_metadata,
+            self.remove_output_execution_counts,
         )
     }
 }
@@ -155,6 +173,8 @@ impl From<&CleanOptions> for notebookx::CleanOptions {
             remove_notebook_metadata: opts.remove_notebook_metadata,
             remove_kernel_info: opts.remove_kernel_info,
             preserve_cell_ids: opts.preserve_cell_ids,
+            remove_output_metadata: opts.remove_output_metadata,
+            remove_output_execution_counts: opts.remove_output_execution_counts,
             allowed_cell_metadata_keys: opts.allowed_cell_metadata_keys.as_ref()
                 .map(|v| v.iter().cloned().collect::<HashSet<_>>()),
             allowed_notebook_metadata_keys: opts.allowed_notebook_metadata_keys.as_ref()
@@ -400,6 +420,8 @@ fn convert(
     remove_notebook_metadata = false,
     remove_kernel_info = false,
     preserve_cell_ids = false,
+    remove_output_metadata = false,
+    remove_output_execution_counts = false,
 ))]
 fn clean_notebook(
     input_path: &str,
@@ -410,6 +432,8 @@ fn clean_notebook(
     remove_notebook_metadata: bool,
     remove_kernel_info: bool,
     preserve_cell_ids: bool,
+    remove_output_metadata: bool,
+    remove_output_execution_counts: bool,
 ) -> PyResult<()> {
     let notebook = Notebook::from_file(input_path, None)?;
 
@@ -420,6 +444,8 @@ fn clean_notebook(
         remove_notebook_metadata,
         remove_kernel_info,
         preserve_cell_ids,
+        remove_output_metadata,
+        remove_output_execution_counts,
         allowed_cell_metadata_keys: None,
         allowed_notebook_metadata_keys: None,
     };

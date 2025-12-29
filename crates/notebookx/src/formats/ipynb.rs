@@ -202,7 +202,7 @@ impl RawSource {
 #[serde(tag = "output_type", rename_all = "snake_case")]
 enum RawOutput {
     ExecuteResult {
-        execution_count: u32,
+        execution_count: Option<u32>,
         data: RawMimeBundle,
         #[serde(default)]
         metadata: OutputMetadata,
@@ -454,7 +454,7 @@ mod tests {
                 data,
                 ..
             } => {
-                assert_eq!(*execution_count, 1);
+                assert_eq!(*execution_count, Some(1));
                 assert_eq!(data.get("text/plain").unwrap().as_string(), "2");
             }
             _ => panic!("Expected ExecuteResult"),

@@ -17,6 +17,8 @@ class CleanOptions:
     remove_notebook_metadata: bool
     remove_kernel_info: bool
     preserve_cell_ids: bool
+    remove_output_metadata: bool
+    remove_output_execution_counts: bool
     allowed_cell_metadata_keys: Optional[List[str]]
     allowed_notebook_metadata_keys: Optional[List[str]]
 
@@ -28,6 +30,8 @@ class CleanOptions:
         remove_notebook_metadata: bool = False,
         remove_kernel_info: bool = False,
         preserve_cell_ids: bool = False,
+        remove_output_metadata: bool = False,
+        remove_output_execution_counts: bool = False,
         allowed_cell_metadata_keys: Optional[List[str]] = None,
         allowed_notebook_metadata_keys: Optional[List[str]] = None,
     ) -> None: ...
@@ -191,6 +195,8 @@ def clean_notebook(
     remove_notebook_metadata: bool = False,
     remove_kernel_info: bool = False,
     preserve_cell_ids: bool = False,
+    remove_output_metadata: bool = False,
+    remove_output_execution_counts: bool = False,
 ) -> None:
     """Clean a notebook file.
 
@@ -204,6 +210,8 @@ def clean_notebook(
         remove_notebook_metadata: Remove notebook-level metadata.
         remove_kernel_info: Remove kernel specification.
         preserve_cell_ids: Preserve cell IDs.
+        remove_output_metadata: Remove metadata from outputs (ExecuteResult, DisplayData).
+        remove_output_execution_counts: Remove execution counts from output results.
 
     Raises:
         ValueError: If the file cannot be parsed.
