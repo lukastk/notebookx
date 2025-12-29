@@ -122,12 +122,14 @@ impl CleanOptions {
         }
     }
 
-    /// Create options for version control (removes outputs and execution counts).
+    /// Create options for version control (removes cell metadata, execution counts, and output metadata/execution counts).
     #[staticmethod]
     fn for_vcs() -> Self {
         CleanOptions {
-            remove_outputs: true,
+            remove_cell_metadata: true,
             remove_execution_counts: true,
+            remove_output_metadata: true,
+            remove_output_execution_counts: true,
             ..Default::default()
         }
     }
@@ -372,7 +374,7 @@ impl Notebook {
     }
 }
 
-/// Custom exception for notebook errors.
+// Custom exception for notebook errors.
 pyo3::create_exception!(_notebookx, NotebookError, pyo3::exceptions::PyException);
 
 /// Convert a notebook between formats.

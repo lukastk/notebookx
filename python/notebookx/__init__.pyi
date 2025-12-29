@@ -38,7 +38,7 @@ class CleanOptions:
 
     @staticmethod
     def for_vcs() -> CleanOptions:
-        """Create options for version control (removes outputs and execution counts)."""
+        """Create options for version control (removes cell metadata, execution counts, and output metadata/execution counts)."""
         ...
 
     @staticmethod

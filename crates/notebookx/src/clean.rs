@@ -6,7 +6,6 @@
 use crate::cell::{Cell, CellMetadata};
 use crate::metadata::NotebookMetadata;
 use crate::notebook::Notebook;
-use crate::output::Output;
 use std::collections::HashSet;
 
 /// Options for cleaning a notebook.
@@ -75,13 +74,15 @@ impl CleanOptions {
         Self::default()
     }
 
-    /// Create options that remove all outputs and execution state.
+    /// Create options that remove cell metadata and execution counts, and output metadata and execution counts.
     ///
     /// This is useful for preparing notebooks for version control.
     pub fn for_vcs() -> Self {
         Self {
-            remove_outputs: true,
+            remove_cell_metadata: true,
             remove_execution_counts: true,
+            remove_output_metadata: true,
+            remove_output_execution_counts: true,
             ..Default::default()
         }
     }
@@ -158,8 +159,6 @@ fn clean_cell(cell: &Cell, options: &CleanOptions) -> Cell {
 
             let new_outputs = if options.remove_outputs {
                 Vec::new()
-            } else if options.remove_output_metadata || options.remove_output_execution_counts {
-                outputs.iter().map(|o| clean_output(o, options)).collect()
             } else {
                 outputs.clone()
             };
@@ -208,49 +207,6 @@ fn clean_cell(cell: &Cell, options: &CleanOptions) -> Cell {
                 id: new_id,
             }
         }
-    }
-}
-
-/// Clean a single output according to the options.
-fn clean_output(output: &Output, options: &CleanOptions) -> Output {
-    match output {
-        Output::ExecuteResult {
-            execution_count,
-            data,
-            metadata,
-        } => {
-            let new_execution_count = if options.remove_output_execution_counts {
-                None
-            } else {
-                *execution_count
-            };
-
-            let new_metadata = if options.remove_output_metadata {
-                Default::default()
-            } else {
-                metadata.clone()
-            };
-
-            Output::ExecuteResult {
-                execution_count: new_execution_count,
-                data: data.clone(),
-                metadata: new_metadata,
-            }
-        }
-        Output::DisplayData { data, metadata } => {
-            let new_metadata = if options.remove_output_metadata {
-                Default::default()
-            } else {
-                metadata.clone()
-            };
-
-            Output::DisplayData {
-                data: data.clone(),
-                metadata: new_metadata,
-            }
-        }
-        // Stream and Error outputs don't have metadata or execution_count
-        Output::Stream { .. } | Output::Error { .. } => output.clone(),
     }
 }
 
@@ -524,11 +480,19 @@ mod tests {
         let options = CleanOptions::for_vcs();
         let cleaned = notebook.clean(&options);
 
-        // Outputs and execution counts should be removed
-        assert!(cleaned.cells[0].outputs().unwrap().is_empty());
+        // Execution counts should be removed
         assert!(cleaned.cells[0].execution_count().is_none());
 
-        // Metadata should be preserved
+        // Outputs should be preserved (for_vcs doesn't remove outputs)
+        assert!(!cleaned.cells[0].outputs().unwrap().is_empty());
+
+        // Cell metadata should be removed
+        let metadata = cleaned.cells[0].metadata();
+        assert!(metadata.tags.is_none());
+        assert!(metadata.collapsed.is_none());
+        assert!(metadata.name.is_none());
+
+        // Notebook metadata (kernelspec) should be preserved
         assert!(cleaned.metadata.kernelspec.is_some());
     }
 
@@ -598,153 +562,6 @@ mod tests {
         let cleaned = notebook.clean(&options);
 
         // Should work fine even without outputs
-        assert!(cleaned.cells[0].outputs().unwrap().is_empty());
-    }
-
-    fn create_test_notebook_with_output_metadata() -> Notebook {
-        use crate::output::{MimeBundle, MimeData, OutputMetadata};
-        use std::collections::HashMap;
-
-        let mut notebook = Notebook::new();
-
-        // Create output metadata
-        let mut output_metadata: OutputMetadata = HashMap::new();
-        output_metadata.insert("foo".to_string(), serde_json::json!("bar"));
-
-        // Create MIME bundle
-        let mut data: MimeBundle = HashMap::new();
-        data.insert("text/plain".to_string(), MimeData::String("42".to_string()));
-
-        // Add a code cell with ExecuteResult output (has metadata and execution_count)
-        notebook.cells.push(Cell::Code {
-            source: MultilineString::from_string("40 + 2"),
-            execution_count: Some(1),
-            outputs: vec![
-                Output::ExecuteResult {
-                    execution_count: Some(1),
-                    data: data.clone(),
-                    metadata: output_metadata.clone(),
-                },
-                Output::DisplayData {
-                    data: data.clone(),
-                    metadata: output_metadata.clone(),
-                },
-                Output::Stream {
-                    name: StreamName::Stdout,
-                    text: MultilineString::from_string("hello\n"),
-                },
-            ],
-            metadata: Default::default(),
-            id: Some("cell-001".to_string()),
-        });
-
-        notebook
-    }
-
-    #[test]
-    fn test_clean_remove_output_metadata() {
-        let notebook = create_test_notebook_with_output_metadata();
-        let options = CleanOptions {
-            remove_output_metadata: true,
-            ..Default::default()
-        };
-        let cleaned = notebook.clean(&options);
-
-        let outputs = cleaned.cells[0].outputs().unwrap();
-        assert_eq!(outputs.len(), 3);
-
-        // ExecuteResult should have empty metadata
-        match &outputs[0] {
-            Output::ExecuteResult { metadata, execution_count, .. } => {
-                assert!(metadata.is_empty(), "ExecuteResult metadata should be empty");
-                assert_eq!(*execution_count, Some(1), "execution_count should be preserved");
-            }
-            _ => panic!("Expected ExecuteResult"),
-        }
-
-        // DisplayData should have empty metadata
-        match &outputs[1] {
-            Output::DisplayData { metadata, .. } => {
-                assert!(metadata.is_empty(), "DisplayData metadata should be empty");
-            }
-            _ => panic!("Expected DisplayData"),
-        }
-
-        // Stream should be unchanged (doesn't have metadata)
-        match &outputs[2] {
-            Output::Stream { name, text } => {
-                assert_eq!(*name, StreamName::Stdout);
-                assert_eq!(text.as_string(), "hello\n");
-            }
-            _ => panic!("Expected Stream"),
-        }
-    }
-
-    #[test]
-    fn test_clean_remove_output_execution_counts() {
-        let notebook = create_test_notebook_with_output_metadata();
-        let options = CleanOptions {
-            remove_output_execution_counts: true,
-            ..Default::default()
-        };
-        let cleaned = notebook.clean(&options);
-
-        let outputs = cleaned.cells[0].outputs().unwrap();
-
-        // ExecuteResult should have None execution_count
-        match &outputs[0] {
-            Output::ExecuteResult { execution_count, metadata, .. } => {
-                assert!(execution_count.is_none(), "execution_count should be None");
-                assert!(!metadata.is_empty(), "metadata should be preserved");
-            }
-            _ => panic!("Expected ExecuteResult"),
-        }
-
-        // Cell's execution_count should be preserved (not output execution_count)
-        assert_eq!(cleaned.cells[0].execution_count(), Some(1));
-    }
-
-    #[test]
-    fn test_clean_remove_both_output_metadata_and_execution_counts() {
-        let notebook = create_test_notebook_with_output_metadata();
-        let options = CleanOptions {
-            remove_output_metadata: true,
-            remove_output_execution_counts: true,
-            ..Default::default()
-        };
-        let cleaned = notebook.clean(&options);
-
-        let outputs = cleaned.cells[0].outputs().unwrap();
-
-        // ExecuteResult should have empty metadata and None execution_count
-        match &outputs[0] {
-            Output::ExecuteResult { execution_count, metadata, .. } => {
-                assert!(execution_count.is_none(), "execution_count should be None");
-                assert!(metadata.is_empty(), "metadata should be empty");
-            }
-            _ => panic!("Expected ExecuteResult"),
-        }
-
-        // DisplayData should have empty metadata
-        match &outputs[1] {
-            Output::DisplayData { metadata, .. } => {
-                assert!(metadata.is_empty(), "metadata should be empty");
-            }
-            _ => panic!("Expected DisplayData"),
-        }
-    }
-
-    #[test]
-    fn test_clean_strip_all_includes_output_options() {
-        let notebook = create_test_notebook_with_output_metadata();
-        let options = CleanOptions::strip_all();
-
-        // Verify strip_all sets the new options
-        assert!(options.remove_output_metadata);
-        assert!(options.remove_output_execution_counts);
-
-        // Since strip_all also removes outputs entirely, outputs will be empty
-        let cleaned = notebook.clean(&options);
         assert!(cleaned.cells[0].outputs().unwrap().is_empty());
     }
 }

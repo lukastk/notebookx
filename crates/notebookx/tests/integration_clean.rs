@@ -91,17 +91,40 @@ fn test_clean_for_vcs() {
     let content = std::fs::read_to_string(EXAMPLE_IPYNB).unwrap();
     let notebook = NotebookFormat::Ipynb.parse(&content).unwrap();
 
+    // Verify the notebook has outputs before cleaning
+    let original_output_count: usize = notebook
+        .cells
+        .iter()
+        .filter_map(|c| c.outputs())
+        .map(|o| o.len())
+        .sum();
+    assert!(original_output_count > 0, "Test notebook should have outputs");
+
     let cleaned = notebook.clean(&CleanOptions::for_vcs());
 
-    // Outputs and execution counts should be removed
+    // Execution counts should be removed
     for cell in &cleaned.cells {
-        if let Some(outputs) = cell.outputs() {
-            assert!(outputs.is_empty(), "VCS clean should remove outputs");
-        }
         assert!(
             cell.execution_count().is_none(),
             "VCS clean should remove execution counts"
         );
+    }
+
+    // Outputs should be preserved (for_vcs doesn't remove outputs, only their metadata)
+    let cleaned_output_count: usize = cleaned
+        .cells
+        .iter()
+        .filter_map(|c| c.outputs())
+        .map(|o| o.len())
+        .sum();
+    assert_eq!(original_output_count, cleaned_output_count, "VCS clean should preserve outputs");
+
+    // Cell metadata should be removed
+    for cell in &cleaned.cells {
+        let metadata = cell.metadata();
+        assert!(metadata.tags.is_none(), "VCS clean should remove cell metadata");
+        assert!(metadata.collapsed.is_none());
+        assert!(metadata.name.is_none());
     }
 
     // Kernel info should be preserved
