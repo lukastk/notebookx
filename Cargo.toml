@@ -1,0 +1,19 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/notebookx",
+    "crates/nbx",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/notebookx/notebookx"
+
+[workspace.dependencies]
+notebookx = { path = "crates/notebookx" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "2.0"
+clap = { version = "4.0", features = ["derive"] }

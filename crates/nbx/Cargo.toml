@@ -1,0 +1,16 @@
+[package]
+name = "nbx"
+description = "CLI tool for notebook conversion"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "nbx"
+path = "src/main.rs"
+
+[dependencies]
+notebookx = { workspace = true }
+clap = { workspace = true }
+thiserror = { workspace = true }
