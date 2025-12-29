@@ -164,8 +164,16 @@ Parsing and serialization are symmetric operations. Each format implements:
 
 ### Milestone 5: Python Bindings
 
+**Project Setup:**
+- [ ] Create `pyproject.toml` at repository root (maturin config)
+- [ ] Create `python/notebookx/` directory structure
+- [ ] Create `crates/notebookx-py/` PyO3 crate
+- [ ] Add `notebookx-py` to workspace members
+- [ ] Set up `python/notebookx/__init__.py` with re-exports
+- [ ] Create `python/notebookx/py.typed` marker file
+
 **Implementation:**
-- [ ] Set up PyO3 project structure
+- [ ] Implement PyO3 bindings in `crates/notebookx-py/src/lib.rs`
 - [ ] Expose `Notebook` class:
   - `Notebook.from_file(path, format=None)`
   - `Notebook.from_string(content, format)`
@@ -177,10 +185,11 @@ Parsing and serialization are symmetric operations. Each format implements:
 - [ ] Convenience functions:
   - `convert(input_path, output_path, from_fmt=None, to_fmt=None)`
   - `clean_notebook(path, output_path=None, **options)`
-- [ ] Python type stubs (.pyi files)
-- [ ] PyPI packaging
+- [ ] Python type stubs (`python/notebookx/__init__.pyi`)
+- [ ] PyPI packaging via maturin
 
-**Testing:**
+**Testing (in `tests/python/`):**
+- [ ] Set up pytest configuration
 - [ ] Test `Notebook.from_file()` with valid ipynb
 - [ ] Test `Notebook.from_file()` with valid percent file
 - [ ] Test `Notebook.from_string()` with both formats
@@ -314,16 +323,35 @@ nbx clean [OPTIONS] <INPUT> [--output <OUTPUT>]
 
 ## Python Bindings Plan
 
-### Module Structure
+### Repository Structure for Python
 
 ```
-notebookx/
-├── __init__.py          # Re-exports from _notebookx
-├── _notebookx.pyd       # Compiled Rust extension
-└── py.typed             # PEP 561 marker
-
-notebookx.pyi            # Type stubs
+notebookx/                      # Repository root
+├── Cargo.toml                  # Workspace configuration
+├── pyproject.toml              # Python package config (maturin)
+├── python/
+│   └── notebookx/
+│       ├── __init__.py         # Re-exports from Rust extension
+│       ├── __init__.pyi        # Type stubs
+│       └── py.typed            # PEP 561 marker
+├── crates/
+│   ├── notebookx/              # Core Rust library
+│   ├── nbx/                    # CLI binary
+│   └── notebookx-py/           # PyO3 bindings crate
+│       ├── Cargo.toml
+│       └── src/
+│           └── lib.rs          # PyO3 module definition
+└── tests/
+    └── python/                 # Python test suite (pytest)
+        └── test_notebookx.py
 ```
+
+### Maturin Configuration
+
+The `pyproject.toml` at root configures maturin to:
+- Build the `notebookx-py` crate as a native extension
+- Include the `python/notebookx/` package
+- Generate wheels for multiple platforms
 
 ### API Design
 

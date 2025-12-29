@@ -39,11 +39,11 @@ Never convert directly between formats without going through `Notebook`.
 ### 2. Format Logic at the Edges
 
 The core `Notebook` struct and its methods should be format-agnostic. Format-specific code lives in:
-- `src/formats/ipynb.rs`
-- `src/formats/percent.rs`
+- `crates/notebookx/src/formats/ipynb.rs`
+- `crates/notebookx/src/formats/percent.rs`
 - etc.
 
-The core module (`src/notebook.rs`) should never import format modules.
+The core module (`crates/notebookx/src/notebook.rs`) should never import format modules.
 
 ### 3. Immutability by Default
 
@@ -102,27 +102,48 @@ pub enum ParseError {
 - Constants: `SCREAMING_SNAKE_CASE`
 - Format enum variants: Match common naming (e.g., `Ipynb`, `Percent`)
 
-### Module Organization
+### Repository Structure
 
 ```
-src/
-├── lib.rs              # Public API re-exports
-├── notebook.rs         # Core Notebook struct and methods
-├── cell.rs             # Cell types and related structs
-├── output.rs           # Output types for code cells
-├── metadata.rs         # Metadata handling
-├── clean.rs            # Cleaning functionality
-├── error.rs            # Error types
-└── formats/
-    ├── mod.rs          # Format enum and traits
-    ├── ipynb.rs        # ipynb JSON format
-    └── percent.rs      # Percent format
+notebookx/                          # Repository root
+├── Cargo.toml                      # Workspace configuration
+├── pyproject.toml                  # Python package config (maturin)
+├── python/
+│   └── notebookx/
+│       ├── __init__.py             # Re-exports from Rust extension
+│       ├── __init__.pyi            # Type stubs
+│       └── py.typed                # PEP 561 marker
+├── crates/
+│   ├── notebookx/                  # Core Rust library
+│   │   └── src/
+│   │       ├── lib.rs              # Public API re-exports
+│   │       ├── notebook.rs         # Core Notebook struct
+│   │       ├── cell.rs             # Cell types
+│   │       ├── output.rs           # Output types
+│   │       ├── metadata.rs         # Metadata handling
+│   │       ├── clean.rs            # Cleaning functionality
+│   │       ├── error.rs            # Error types
+│   │       └── formats/
+│   │           ├── mod.rs          # Format enum and traits
+│   │           ├── ipynb.rs        # ipynb JSON format
+│   │           └── percent.rs      # Percent format
+│   ├── nbx/                        # CLI binary
+│   │   └── src/
+│   │       └── main.rs
+│   └── notebookx-py/               # PyO3 bindings crate
+│       └── src/
+│           └── lib.rs              # PyO3 module definition
+├── tests/
+│   └── python/                     # Python test suite (pytest)
+│       └── test_notebookx.py
+└── nb_format_examples/             # Example notebook files
 ```
 
 ### Testing
 
-- Unit tests in the same file as the code (`#[cfg(test)]`)
-- Integration tests in `tests/` directory
+- Rust unit tests in the same file as the code (`#[cfg(test)]`)
+- Rust integration tests in `crates/notebookx/tests/` directory
+- Python tests in `tests/python/` using pytest
 - Use `insta` for snapshot testing of serialized output
 - Name tests descriptively: `test_parse_empty_notebook`, `test_clean_removes_outputs`
 
@@ -141,7 +162,7 @@ To add support for a new format (e.g., MyST Markdown):
 ### 1. Add Format Variant
 
 ```rust
-// src/formats/mod.rs
+// crates/notebookx/src/formats/mod.rs
 pub enum NotebookFormat {
     Ipynb,
     Percent,
@@ -152,7 +173,7 @@ pub enum NotebookFormat {
 ### 2. Create Format Module
 
 ```rust
-// src/formats/myst.rs
+// crates/notebookx/src/formats/myst.rs
 use crate::{Notebook, ParseError, SerializeError};
 
 pub fn parse(input: &str) -> Result<Notebook, ParseError> {
@@ -172,7 +193,7 @@ pub struct MystOptions {
 ### 3. Register in Format Module
 
 ```rust
-// src/formats/mod.rs
+// crates/notebookx/src/formats/mod.rs
 mod myst;
 
 impl NotebookFormat {
@@ -375,6 +396,11 @@ Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`
 - `clap` - CLI parsing
 - `pyo3` - Python bindings
 - `regex` - Text parsing (if needed)
+
+### Python Build Tools
+
+- `maturin` - Build tool for PyO3 projects (configured in `pyproject.toml`)
+- `pytest` - Python test framework (dev dependency)
 
 ### Avoid
 
