@@ -18,6 +18,7 @@
 //! ```
 
 mod cell;
+mod clean;
 mod error;
 mod metadata;
 mod notebook;
@@ -26,6 +27,7 @@ mod output;
 pub mod formats;
 
 pub use cell::{Cell, CellMetadata};
+pub use clean::CleanOptions;
 pub use error::{NotebookError, ParseError, SerializeError};
 pub use formats::NotebookFormat;
 pub use metadata::{NotebookMetadata, KernelSpec, LanguageInfo};
