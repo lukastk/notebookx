@@ -91,6 +91,20 @@ Shows how to manipulate notebooks:
 cargo run --example 04_modify_notebook
 ```
 
+### 05_clean_notebook
+
+**Cleaning notebooks**
+
+Demonstrates how to clean notebooks for version control:
+- Removing outputs and execution counts
+- Using preset cleaning options (`for_vcs`, `strip_all`)
+- Custom cleaning with specific options
+- Verifying immutability (original unchanged)
+
+```bash
+cargo run --example 05_clean_notebook
+```
+
 ## Example Output
 
 Running `00_basic_notebook` produces output like:
