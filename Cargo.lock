@@ -205,23 +205,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "nbx"
-version = "0.1.0"
-dependencies = [
- "clap",
- "notebookx",
- "serde_json",
- "tempfile",
- "thiserror",
-]
-
-[[package]]
 name = "notebookx"
 version = "0.1.0"
 dependencies = [
+ "clap",
  "pretty_assertions",
  "serde",
  "serde_json",
+ "tempfile",
  "thiserror",
 ]
 
@@ -229,7 +220,6 @@ dependencies = [
 name = "notebookx-py"
 version = "0.1.0"
 dependencies = [
- "nbx",
  "notebookx",
  "pyo3",
 ]

@@ -11,6 +11,5 @@ name = "_notebookx"
 crate-type = ["cdylib"]
 
 [dependencies]
-notebookx = { workspace = true }
-nbx = { workspace = true }
+notebookx = { workspace = true, features = ["cli"] }
 pyo3 = { workspace = true }

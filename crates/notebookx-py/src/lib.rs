@@ -469,7 +469,7 @@ fn clean_notebook(
 ///     Exit code (0 for success, non-zero for errors).
 #[pyfunction]
 fn run_cli(args: Vec<String>) -> i32 {
-    nbx::run(args)
+    notebookx::cli::run(args)
 }
 
 /// Python module for notebookx.

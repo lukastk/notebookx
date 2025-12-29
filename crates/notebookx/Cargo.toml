@@ -6,13 +6,24 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 
+[features]
+default = []
+cli = ["dep:clap"]
+
+[[bin]]
+name = "nbx"
+path = "src/main.rs"
+required-features = ["cli"]
+
 [dependencies]
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
+clap = { workspace = true, optional = true }
 
 [dev-dependencies]
 pretty_assertions = "1.4"
+tempfile = "3"
 
 [[example]]
 name = "00_basic_notebook"

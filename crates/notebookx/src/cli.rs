@@ -1,15 +1,25 @@
-//! nbx - CLI tool for notebook conversion
+//! Command-line interface for notebookx.
 //!
-//! A fast, lightweight tool for converting and cleaning Jupyter notebooks.
+//! This module provides the `nbx` CLI tool for converting and cleaning
+//! Jupyter notebooks. It can be used both as a standalone binary and
+//! called from Python via PyO3.
 //!
-//! This library provides the CLI functionality that can be used both as a
-//! standalone binary and called from Python via PyO3.
+//! # Example
+//!
+//! ```bash
+//! # Convert notebook to percent format
+//! nbx convert notebook.ipynb --output script.pct.py
+//!
+//! # Clean a notebook (remove outputs)
+//! nbx clean notebook.ipynb --remove-outputs --in-place
+//! ```
 
 use clap::{Parser, Subcommand, ValueEnum};
-use notebookx::{CleanOptions, NotebookFormat};
 use std::collections::HashSet;
 use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
+
+use crate::{CleanOptions, NotebookFormat};
 
 /// Exit codes for scripting
 pub mod exit_codes {
@@ -138,6 +148,16 @@ impl From<Format> for NotebookFormat {
 /// # Returns
 ///
 /// Exit code (0 for success, non-zero for errors)
+///
+/// # Example
+///
+/// ```no_run
+/// use notebookx::cli;
+///
+/// // Run with command-line arguments
+/// let exit_code = cli::run(std::env::args_os());
+/// std::process::exit(exit_code);
+/// ```
 pub fn run<I, T>(args: I) -> i32
 where
     I: IntoIterator<Item = T>,

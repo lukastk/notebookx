@@ -26,6 +26,9 @@ mod output;
 
 pub mod formats;
 
+#[cfg(feature = "cli")]
+pub mod cli;
+
 pub use cell::{Cell, CellMetadata};
 pub use clean::CleanOptions;
 pub use error::{NotebookError, ParseError, SerializeError};
