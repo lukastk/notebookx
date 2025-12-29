@@ -4,6 +4,7 @@
 //! notebooks. Each format lives in its own submodule.
 
 pub mod ipynb;
+pub mod percent;
 
 use crate::{Notebook, ParseError, SerializeError};
 
@@ -56,12 +57,7 @@ impl NotebookFormat {
     pub fn parse(&self, input: &str) -> Result<Notebook, ParseError> {
         match self {
             NotebookFormat::Ipynb => ipynb::parse(input),
-            NotebookFormat::Percent => {
-                // TODO: Implement in Milestone 2
-                Err(ParseError::InvalidStructure {
-                    message: "Percent format not yet implemented".to_string(),
-                })
-            }
+            NotebookFormat::Percent => percent::parse(input),
         }
     }
 
@@ -69,12 +65,7 @@ impl NotebookFormat {
     pub fn serialize(&self, notebook: &Notebook) -> Result<String, SerializeError> {
         match self {
             NotebookFormat::Ipynb => ipynb::serialize(notebook),
-            NotebookFormat::Percent => {
-                // TODO: Implement in Milestone 2
-                Err(SerializeError::InvalidData {
-                    message: "Percent format not yet implemented".to_string(),
-                })
-            }
+            NotebookFormat::Percent => percent::serialize(notebook),
         }
     }
 }
