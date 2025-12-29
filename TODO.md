@@ -222,7 +222,7 @@ Parsing and serialization are symmetric operations. Each format implements:
   - Windows x86_64
 - [x] Build source distribution (sdist)
 - [x] Publish to PyPI on release
-- [ ] Publish to crates.io on release (optional)
+- [x] Publish to crates.io on release
 
 **Notes:**
 - Using `abi3-py38` means one wheel per platform works for Python 3.8+
