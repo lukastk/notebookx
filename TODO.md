@@ -207,21 +207,21 @@ Parsing and serialization are symmetric operations. Each format implements:
 ### Milestone 6: CI/CD & Wheel Building
 
 **GitHub Actions CI:**
-- [ ] Create `.github/workflows/ci.yml` for continuous integration
+- [x] Create `.github/workflows/ci.yml` for continuous integration
   - Run Rust tests on push/PR
   - Run Python tests on push/PR
   - Test on ubuntu-latest, macos-latest, windows-latest
 
 **Release Workflow & Wheel Building:**
-- [ ] Create `.github/workflows/release.yml` triggered on git tags
-- [ ] Build wheels for all major platforms using maturin:
+- [x] Create `.github/workflows/release.yml` triggered on git tags
+- [x] Build wheels for all major platforms using maturin:
   - Linux x86_64 (manylinux)
   - Linux ARM64 (manylinux)
   - macOS x86_64 (Intel)
   - macOS ARM64 (Apple Silicon)
   - Windows x86_64
-- [ ] Build source distribution (sdist)
-- [ ] Publish to PyPI on release
+- [x] Build source distribution (sdist)
+- [x] Publish to PyPI on release
 - [ ] Publish to crates.io on release (optional)
 
 **Notes:**
