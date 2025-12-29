@@ -1,6 +1,6 @@
-# notebookx Examples
+# Rust Examples
 
-This directory contains examples demonstrating how to use the `notebookx` library.
+This directory contains examples demonstrating how to use the `notebookx` Rust library.
 
 ## Prerequisites
 
@@ -8,14 +8,9 @@ Make sure you're in the repository root directory when running examples, as some
 
 ## Running Examples
 
-All examples can be run using cargo:
+All examples can be run using cargo from the repository root:
 
 ```bash
-# From the repository root
-cargo run --example <example_name>
-
-# Or from the crates/notebookx directory
-cd crates/notebookx
 cargo run --example <example_name>
 ```
 
@@ -145,4 +140,5 @@ When adding new examples:
 1. Create a new file named `NN_example_name.rs` where `NN` is the next number
 2. Include a module-level doc comment explaining the example
 3. Add a run instruction in the doc comment
-4. Update this README with a description
+4. Add an `[[example]]` entry in `crates/notebookx/Cargo.toml`
+5. Update this README with a description

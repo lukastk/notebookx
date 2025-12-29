@@ -13,3 +13,27 @@ thiserror = { workspace = true }
 
 [dev-dependencies]
 pretty_assertions = "1.4"
+
+[[example]]
+name = "00_basic_notebook"
+path = "../../examples/rust/00_basic_notebook.rs"
+
+[[example]]
+name = "01_parse_ipynb"
+path = "../../examples/rust/01_parse_ipynb.rs"
+
+[[example]]
+name = "02_convert_formats"
+path = "../../examples/rust/02_convert_formats.rs"
+
+[[example]]
+name = "03_inspect_notebook"
+path = "../../examples/rust/03_inspect_notebook.rs"
+
+[[example]]
+name = "04_modify_notebook"
+path = "../../examples/rust/04_modify_notebook.rs"
+
+[[example]]
+name = "05_clean_notebook"
+path = "../../examples/rust/05_clean_notebook.rs"

@@ -2,6 +2,8 @@
 
 This directory contains examples demonstrating how to use the `notebookx` Python library.
 
+Each example is available as both a Python script (`.py`) and a Jupyter notebook (`.ipynb`).
+
 ## Prerequisites
 
 1. Install the notebookx package:
@@ -16,6 +18,18 @@ This directory contains examples demonstrating how to use the `notebookx` Python
    ```
 
 2. Run examples from the repository root directory (examples use notebook files from `nb_format_examples/`).
+
+## Running Examples
+
+**As Python scripts:**
+```bash
+python examples/python/01_basic_usage.py
+```
+
+**As Jupyter notebooks:**
+```bash
+jupyter notebook examples/python/01_basic_usage.ipynb
+```
 
 ## Examples
 
