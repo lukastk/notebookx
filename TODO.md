@@ -64,57 +64,57 @@ Parsing and serialization are symmetric operations. Each format implements:
 
 ## Milestones
 
-### Milestone 1: Core Data Model & ipynb Support
+### Milestone 1: Core Data Model & ipynb Support ✓
 
 **Implementation:**
-- [ ] Define `Notebook`, `Cell`, `Output`, `Metadata` structs
-- [ ] Implement serde serialization for ipynb JSON format
-- [ ] Handle all output types: execute_result, display_data, stream, error
-- [ ] Support MIME bundles with text, JSON, and base64 binary data
+- [x] Define `Notebook`, `Cell`, `Output`, `Metadata` structs
+- [x] Implement serde serialization for ipynb JSON format
+- [x] Handle all output types: execute_result, display_data, stream, error
+- [x] Support MIME bundles with text, JSON, and base64 binary data
 
 **Testing:**
-- [ ] Unit tests for each struct's serialization/deserialization
-- [ ] Test parsing of minimal valid notebook (empty cells array)
-- [ ] Test parsing of notebook with all cell types (code, markdown, raw)
-- [ ] Test parsing of all output types individually
-- [ ] Test MIME bundle handling (text/plain, text/html, image/png base64)
-- [ ] Test edge cases: empty cells, cells with only whitespace, unicode content
-- [ ] Test error handling for malformed JSON
-- [ ] Test error handling for invalid notebook structure
-- [ ] Round-trip test: parse ipynb → serialize → parse → compare
-- [ ] Integration test with `nb_format_examples/World population.ipynb`
+- [x] Unit tests for each struct's serialization/deserialization
+- [x] Test parsing of minimal valid notebook (empty cells array)
+- [x] Test parsing of notebook with all cell types (code, markdown, raw)
+- [x] Test parsing of all output types individually
+- [x] Test MIME bundle handling (text/plain, text/html, image/png base64)
+- [x] Test edge cases: empty cells, cells with only whitespace, unicode content
+- [x] Test error handling for malformed JSON
+- [x] Test error handling for invalid notebook structure
+- [x] Round-trip test: parse ipynb → serialize → parse → compare
+- [x] Integration test with `nb_format_examples/World population.ipynb`
 
-### Milestone 2: Percent Format Support
+### Milestone 2: Percent Format Support ✓
 
 **Implementation:**
-- [ ] Implement percent format parser
-  - [ ] YAML header extraction (optional, with defaults)
-  - [ ] Cell delimiter parsing (`# %%`, `# %% [markdown]`, `# %% [raw]`)
-  - [ ] Cell metadata parsing (`# %% tags=["hide"]`)
-  - [ ] Markdown cell content (comment-prefixed lines)
-- [ ] Implement percent format serializer
-  - [ ] YAML header generation (configurable)
-  - [ ] Cell delimiter generation
-  - [ ] Proper comment wrapping for markdown
+- [x] Implement percent format parser
+  - [x] YAML header extraction (optional, with defaults)
+  - [x] Cell delimiter parsing (`# %%`, `# %% [markdown]`, `# %% [raw]`)
+  - [x] Cell metadata parsing (`# %% tags=["hide"]`)
+  - [x] Markdown cell content (comment-prefixed lines)
+- [x] Implement percent format serializer
+  - [x] YAML header generation (configurable)
+  - [x] Cell delimiter generation
+  - [x] Proper comment wrapping for markdown
 
 **Testing:**
-- [ ] Unit tests for YAML header parsing (present, absent, malformed)
-- [ ] Unit tests for cell delimiter parsing (all cell types)
-- [ ] Unit tests for cell metadata extraction from delimiter line
-- [ ] Unit tests for markdown comment prefix stripping/adding
-- [ ] Test empty percent file (no cells)
-- [ ] Test percent file with only code cells
-- [ ] Test percent file with mixed cell types
-- [ ] Test edge cases: empty lines between cells, trailing whitespace
-- [ ] Test serialization options (header styles: full, minimal, none)
-- [ ] Round-trip test: percent → Notebook → percent → compare
-- [ ] Cross-format round-trip: ipynb → percent → ipynb (content preservation)
-- [ ] Integration test with `nb_format_examples/World population.pct.py`
+- [x] Unit tests for YAML header parsing (present, absent, malformed)
+- [x] Unit tests for cell delimiter parsing (all cell types)
+- [x] Unit tests for cell metadata extraction from delimiter line
+- [x] Unit tests for markdown comment prefix stripping/adding
+- [x] Test empty percent file (no cells)
+- [x] Test percent file with only code cells
+- [x] Test percent file with mixed cell types
+- [x] Test edge cases: empty lines between cells, trailing whitespace
+- [x] Test serialization options (header styles: full, minimal, none)
+- [x] Round-trip test: percent → Notebook → percent → compare
+- [x] Cross-format round-trip: ipynb → percent → ipynb (content preservation)
+- [x] Integration test with `nb_format_examples/World population.pct.py`
 
-### Milestone 3: Clean Functionality
+### Milestone 3: Clean Functionality ✓
 
 **Implementation:**
-- [ ] Define `CleanOptions` struct with granular controls:
+- [x] Define `CleanOptions` struct with granular controls:
   - `remove_outputs: bool`
   - `remove_execution_counts: bool`
   - `remove_cell_metadata: bool`
@@ -122,89 +122,89 @@ Parsing and serialization are symmetric operations. Each format implements:
   - `remove_kernel_info: bool`
   - `preserve_cell_ids: bool`
   - `allowed_metadata_keys: Option<Vec<String>>`
-- [ ] Implement `Notebook::clean(options: CleanOptions) -> Notebook`
-- [ ] Ensure clean creates a new copy, not mutation
+- [x] Implement `Notebook::clean(options: CleanOptions) -> Notebook`
+- [x] Ensure clean creates a new copy, not mutation
 
 **Testing:**
-- [ ] Test each clean option individually (outputs, exec counts, cell meta, etc.)
-- [ ] Test combinations of clean options
-- [ ] Test that original notebook is unchanged after clean (immutability)
-- [ ] Test clean with empty options (should return equivalent notebook)
-- [ ] Test `allowed_metadata_keys` whitelist behavior
-- [ ] Test idempotency: `clean(clean(nb, opts), opts) == clean(nb, opts)`
-- [ ] Test clean on notebook with no outputs (no-op for remove_outputs)
-- [ ] Test clean preserves cell content integrity
-- [ ] Integration test: clean real notebook, verify outputs removed
+- [x] Test each clean option individually (outputs, exec counts, cell meta, etc.)
+- [x] Test combinations of clean options
+- [x] Test that original notebook is unchanged after clean (immutability)
+- [x] Test clean with empty options (should return equivalent notebook)
+- [x] Test `allowed_metadata_keys` whitelist behavior
+- [x] Test idempotency: `clean(clean(nb, opts), opts) == clean(nb, opts)`
+- [x] Test clean on notebook with no outputs (no-op for remove_outputs)
+- [x] Test clean preserves cell content integrity
+- [x] Integration test: clean real notebook, verify outputs removed
 
-### Milestone 4: CLI (`nbx`)
+### Milestone 4: CLI (`nbx`) ✓
 
 **Implementation:**
-- [ ] Set up clap-based CLI structure
-- [ ] Implement format inference from file extensions
-- [ ] Commands:
+- [x] Set up clap-based CLI structure
+- [x] Implement format inference from file extensions
+- [x] Commands:
   - `nbx <input> --to <output>` (convert with format inference)
   - `nbx <input> --from-fmt <fmt> --to <output> --to-fmt <fmt>` (explicit formats)
   - `nbx clean <input> [--output <output>] [--remove-outputs] [--remove-metadata] ...`
-- [ ] Stdin/stdout support (`nbx - --from-fmt ipynb --to - --to-fmt percent`)
-- [ ] Error handling with helpful messages
-- [ ] Exit codes for scripting
+- [x] Stdin/stdout support (`nbx - --from-fmt ipynb --to - --to-fmt percent`)
+- [x] Error handling with helpful messages
+- [x] Exit codes for scripting
 
 **Testing:**
-- [ ] Test format inference from file extensions (.ipynb, .pct.py)
-- [ ] Test explicit format flags override inference
-- [ ] Test conversion: ipynb → percent (file to file)
-- [ ] Test conversion: percent → ipynb (file to file)
-- [ ] Test stdin/stdout conversion
-- [ ] Test clean command with each flag
-- [ ] Test clean --in-place modifies file correctly
-- [ ] Test error exit codes for: missing file, parse error, invalid args
-- [ ] Test helpful error messages for common mistakes
-- [ ] Test --help output for all commands
-- [ ] End-to-end test: convert real notebook via CLI, verify output
+- [x] Test format inference from file extensions (.ipynb, .pct.py)
+- [x] Test explicit format flags override inference
+- [x] Test conversion: ipynb → percent (file to file)
+- [x] Test conversion: percent → ipynb (file to file)
+- [x] Test stdin/stdout conversion
+- [x] Test clean command with each flag
+- [x] Test clean --in-place modifies file correctly
+- [x] Test error exit codes for: missing file, parse error, invalid args
+- [x] Test helpful error messages for common mistakes
+- [x] Test --help output for all commands
+- [x] End-to-end test: convert real notebook via CLI, verify output
 
-### Milestone 5: Python Bindings
+### Milestone 5: Python Bindings ✓
 
 **Project Setup:**
-- [ ] Create `pyproject.toml` at repository root (maturin config)
-- [ ] Create `python/notebookx/` directory structure
-- [ ] Create `crates/notebookx-py/` PyO3 crate
-- [ ] Add `notebookx-py` to workspace members
-- [ ] Set up `python/notebookx/__init__.py` with re-exports
-- [ ] Create `python/notebookx/py.typed` marker file
+- [x] Create `pyproject.toml` at repository root (maturin config)
+- [x] Create `python/notebookx/` directory structure
+- [x] Create `crates/notebookx-py/` PyO3 crate
+- [x] Add `notebookx-py` to workspace members
+- [x] Set up `python/notebookx/__init__.py` with re-exports
+- [x] Create `python/notebookx/py.typed` marker file
 
 **Implementation:**
-- [ ] Implement PyO3 bindings in `crates/notebookx-py/src/lib.rs`
-- [ ] Expose `Notebook` class:
+- [x] Implement PyO3 bindings in `crates/notebookx-py/src/lib.rs`
+- [x] Expose `Notebook` class:
   - `Notebook.from_file(path, format=None)`
   - `Notebook.from_string(content, format)`
   - `Notebook.to_file(path, format=None)`
   - `Notebook.to_string(format)`
   - `Notebook.clean(options=None)`
-- [ ] Expose `CleanOptions` as Python dataclass/dict
-- [ ] Expose format enum: `Format.IPYNB`, `Format.PERCENT`
-- [ ] Convenience functions:
+- [x] Expose `CleanOptions` as Python dataclass/dict
+- [x] Expose format enum: `Format.IPYNB`, `Format.PERCENT`
+- [x] Convenience functions:
   - `convert(input_path, output_path, from_fmt=None, to_fmt=None)`
   - `clean_notebook(path, output_path=None, **options)`
-- [ ] Python type stubs (`python/notebookx/__init__.pyi`)
-- [ ] PyPI packaging via maturin
+- [x] Python type stubs (`python/notebookx/__init__.pyi`)
+- [x] PyPI packaging via maturin
 
 **Testing (in `tests/python/`):**
-- [ ] Set up pytest configuration
-- [ ] Test `Notebook.from_file()` with valid ipynb
-- [ ] Test `Notebook.from_file()` with valid percent file
-- [ ] Test `Notebook.from_string()` with both formats
-- [ ] Test `Notebook.to_file()` writes correct content
-- [ ] Test `Notebook.to_string()` returns correct string
-- [ ] Test format inference in Python API
-- [ ] Test `Notebook.clean()` with various options
-- [ ] Test `CleanOptions` construction from kwargs
-- [ ] Test error handling: FileNotFoundError, ValueError for parse errors
-- [ ] Test `convert()` convenience function
-- [ ] Test `clean_notebook()` convenience function
-- [ ] Test type stubs are correct (mypy/pyright check)
-- [ ] Integration test: round-trip through Python API
+- [x] Set up pytest configuration
+- [x] Test `Notebook.from_file()` with valid ipynb
+- [x] Test `Notebook.from_file()` with valid percent file
+- [x] Test `Notebook.from_string()` with both formats
+- [x] Test `Notebook.to_file()` writes correct content
+- [x] Test `Notebook.to_string()` returns correct string
+- [x] Test format inference in Python API
+- [x] Test `Notebook.clean()` with various options
+- [x] Test `CleanOptions` construction from kwargs
+- [x] Test error handling: FileNotFoundError, ValueError for parse errors
+- [x] Test `convert()` convenience function
+- [x] Test `clean_notebook()` convenience function
+- [x] Test type stubs are correct (mypy/pyright check)
+- [x] Integration test: round-trip through Python API
 
-### Milestone 6: CI/CD & Wheel Building
+### Milestone 6: CI/CD & Wheel Building ✓
 
 **GitHub Actions CI:**
 - [x] Create `.github/workflows/ci.yml` for continuous integration
