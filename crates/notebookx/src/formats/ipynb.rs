@@ -724,7 +724,10 @@ mod tests {
 
         match &outputs[0] {
             Output::ExecuteResult { data, .. } => {
-                assert_eq!(data.get("text/plain").unwrap().as_string(), "line1\nline2\nline3");
+                assert_eq!(
+                    data.get("text/plain").unwrap().as_string(),
+                    "line1\nline2\nline3"
+                );
             }
             _ => panic!("Expected ExecuteResult"),
         }
@@ -763,7 +766,10 @@ mod tests {
         }"##;
 
         let notebook = parse(json).unwrap();
-        assert_eq!(notebook.cells[0].source_string(), "# 你好世界 🌍\n\nこんにちは");
+        assert_eq!(
+            notebook.cells[0].source_string(),
+            "# 你好世界 🌍\n\nこんにちは"
+        );
     }
 
     #[test]

@@ -19,7 +19,10 @@ fn test_clean_real_notebook_outputs() {
         .filter_map(|c| c.outputs())
         .map(|o| o.len())
         .sum();
-    assert!(original_output_count > 0, "Test notebook should have outputs");
+    assert!(
+        original_output_count > 0,
+        "Test notebook should have outputs"
+    );
 
     // Clean outputs
     let options = CleanOptions {
@@ -50,11 +53,11 @@ fn test_clean_real_notebook_execution_counts() {
     let notebook = NotebookFormat::Ipynb.parse(&content).unwrap();
 
     // Verify the notebook has execution counts
-    let has_execution_counts = notebook
-        .cells
-        .iter()
-        .any(|c| c.execution_count().is_some());
-    assert!(has_execution_counts, "Test notebook should have execution counts");
+    let has_execution_counts = notebook.cells.iter().any(|c| c.execution_count().is_some());
+    assert!(
+        has_execution_counts,
+        "Test notebook should have execution counts"
+    );
 
     // Clean execution counts
     let options = CleanOptions {
@@ -64,10 +67,7 @@ fn test_clean_real_notebook_execution_counts() {
     let cleaned = notebook.clean(&options);
 
     // All execution counts should be removed
-    let has_cleaned_execution_counts = cleaned
-        .cells
-        .iter()
-        .any(|c| c.execution_count().is_some());
+    let has_cleaned_execution_counts = cleaned.cells.iter().any(|c| c.execution_count().is_some());
     assert!(!has_cleaned_execution_counts);
 
     // Outputs should be preserved
@@ -98,7 +98,10 @@ fn test_clean_for_vcs() {
         .filter_map(|c| c.outputs())
         .map(|o| o.len())
         .sum();
-    assert!(original_output_count > 0, "Test notebook should have outputs");
+    assert!(
+        original_output_count > 0,
+        "Test notebook should have outputs"
+    );
 
     let cleaned = notebook.clean(&CleanOptions::for_vcs());
 
@@ -117,12 +120,18 @@ fn test_clean_for_vcs() {
         .filter_map(|c| c.outputs())
         .map(|o| o.len())
         .sum();
-    assert_eq!(original_output_count, cleaned_output_count, "VCS clean should preserve outputs");
+    assert_eq!(
+        original_output_count, cleaned_output_count,
+        "VCS clean should preserve outputs"
+    );
 
     // Cell metadata should be removed
     for cell in &cleaned.cells {
         let metadata = cell.metadata();
-        assert!(metadata.tags.is_none(), "VCS clean should remove cell metadata");
+        assert!(
+            metadata.tags.is_none(),
+            "VCS clean should remove cell metadata"
+        );
         assert!(metadata.collapsed.is_none());
         assert!(metadata.name.is_none());
     }
@@ -228,7 +237,10 @@ fn test_clean_removes_kernel_info() {
     let content = std::fs::read_to_string(EXAMPLE_IPYNB).unwrap();
     let notebook = NotebookFormat::Ipynb.parse(&content).unwrap();
 
-    assert!(notebook.metadata.kernelspec.is_some(), "Test notebook should have kernelspec");
+    assert!(
+        notebook.metadata.kernelspec.is_some(),
+        "Test notebook should have kernelspec"
+    );
 
     let options = CleanOptions {
         remove_kernel_info: true,
@@ -256,5 +268,8 @@ fn test_clean_idempotent_on_real_notebook() {
         assert_eq!(c1.execution_count(), c2.execution_count());
         assert_eq!(c1.id(), c2.id());
     }
-    assert_eq!(cleaned_once.metadata.kernelspec, cleaned_twice.metadata.kernelspec);
+    assert_eq!(
+        cleaned_once.metadata.kernelspec,
+        cleaned_twice.metadata.kernelspec
+    );
 }

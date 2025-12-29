@@ -32,7 +32,7 @@ notebookx = "0.1"
 ### CLI
 
 ```bash
-cargo install nbx
+cargo install notebookx --features cli
 ```
 
 ## Usage
@@ -90,19 +90,23 @@ cat notebook.ipynb | nbx convert - --from-fmt ipynb --to - --to-fmt percent
 use notebookx::{Notebook, NotebookFormat, CleanOptions};
 
 // Parse from file
-let notebook = Notebook::from_file("example.ipynb")?;
+let content = std::fs::read_to_string("example.ipynb")?;
+let notebook = NotebookFormat::Ipynb.parse(&content)?;
 
 // Convert to percent format
 let percent = NotebookFormat::Percent.serialize(&notebook)?;
 
 // Clean notebook
-let options = CleanOptions::default()
-    .with_remove_outputs(true)
-    .with_remove_execution_counts(true);
+let options = CleanOptions {
+    remove_outputs: true,
+    remove_execution_counts: true,
+    ..Default::default()
+};
 let clean = notebook.clean(&options);
 
 // Save to file
-clean.to_file("clean.ipynb", None)?;
+let output = NotebookFormat::Ipynb.serialize(&clean)?;
+std::fs::write("clean.ipynb", output)?;
 ```
 
 ## Supported Formats
@@ -124,15 +128,18 @@ When cleaning notebooks, you can control what gets removed:
 | `remove_notebook_metadata` | Remove notebook-level metadata |
 | `remove_kernel_info` | Remove kernel specification |
 | `preserve_cell_ids` | Keep cell IDs (default: regenerate) |
+| `remove_output_metadata` | Remove metadata from outputs |
+| `remove_output_execution_counts` | Remove execution counts from outputs |
 
 ### Presets
 
 **Python:**
 ```python
-# For version control (removes outputs and execution counts)
+# For version control (removes cell metadata, execution counts, and output metadata)
+# Preserves outputs so rendered content remains visible
 options = CleanOptions.for_vcs()
 
-# Strip everything
+# Strip everything (including outputs)
 options = CleanOptions.strip_all()
 ```
 

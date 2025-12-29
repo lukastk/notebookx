@@ -350,8 +350,7 @@ notebookx/                      # Repository root
 │       ├── __init__.pyi        # Type stubs
 │       └── py.typed            # PEP 561 marker
 ├── crates/
-│   ├── notebookx/              # Core Rust library
-│   ├── nbx/                    # CLI binary
+│   ├── notebookx/              # Core Rust library + CLI (with "cli" feature)
 │   └── notebookx-py/           # PyO3 bindings crate
 │       ├── Cargo.toml
 │       └── src/

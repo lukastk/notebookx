@@ -53,7 +53,10 @@ fn test_real_notebook_has_outputs() {
         .filter(|outputs| !outputs.is_empty())
         .collect();
 
-    assert!(!cells_with_outputs.is_empty(), "Expected cells with outputs");
+    assert!(
+        !cells_with_outputs.is_empty(),
+        "Expected cells with outputs"
+    );
 }
 
 #[test]
@@ -171,10 +174,7 @@ fn test_real_notebook_preserves_extra_metadata() {
 #[test]
 fn test_format_inference_from_path() {
     let path = Path::new("notebook.ipynb");
-    assert_eq!(
-        NotebookFormat::from_path(path),
-        Some(NotebookFormat::Ipynb)
-    );
+    assert_eq!(NotebookFormat::from_path(path), Some(NotebookFormat::Ipynb));
 
     let path = Path::new("notebook.pct.py");
     assert_eq!(

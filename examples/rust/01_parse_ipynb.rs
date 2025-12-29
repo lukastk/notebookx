@@ -28,7 +28,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Print basic info
     println!("\n=== Notebook Info ===");
-    println!("Format: nbformat {}.{}", notebook.nbformat, notebook.nbformat_minor);
+    println!(
+        "Format: nbformat {}.{}",
+        notebook.nbformat, notebook.nbformat_minor
+    );
     println!("Total cells: {}", notebook.len());
 
     // Print kernel info

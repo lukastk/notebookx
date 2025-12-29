@@ -12,19 +12,27 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut notebook = Notebook::new();
 
     // Add a markdown cell with a title
-    notebook.cells.push(Cell::markdown("# My First Notebook\n\nThis notebook was created with notebookx!"));
+    notebook.cells.push(Cell::markdown(
+        "# My First Notebook\n\nThis notebook was created with notebookx!",
+    ));
 
     // Add a code cell
     notebook.cells.push(Cell::code("print('Hello, World!')"));
 
     // Add another markdown cell
-    notebook.cells.push(Cell::markdown("## Data Analysis\n\nLet's do some calculations:"));
+    notebook.cells.push(Cell::markdown(
+        "## Data Analysis\n\nLet's do some calculations:",
+    ));
 
     // Add more code cells
-    notebook.cells.push(Cell::code("x = 10\ny = 20\nresult = x + y\nprint(f'The sum is: {result}')"));
+    notebook.cells.push(Cell::code(
+        "x = 10\ny = 20\nresult = x + y\nprint(f'The sum is: {result}')",
+    ));
 
     // Add a final markdown cell
-    notebook.cells.push(Cell::markdown("### Conclusion\n\nWe successfully created a notebook programmatically!"));
+    notebook.cells.push(Cell::markdown(
+        "### Conclusion\n\nWe successfully created a notebook programmatically!",
+    ));
 
     // Print notebook info
     println!("Created notebook with {} cells:", notebook.len());
@@ -36,7 +44,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         } else {
             "raw"
         };
-        println!("  Cell {}: {} ({} chars)", i, cell_type, cell.source_string().len());
+        println!(
+            "  Cell {}: {} ({} chars)",
+            i,
+            cell_type,
+            cell.source_string().len()
+        );
     }
 
     // Serialize to ipynb format

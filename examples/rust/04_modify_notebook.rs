@@ -14,10 +14,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("=== Building a Notebook ===");
 
     // Add cells programmatically
-    notebook.cells.push(Cell::markdown("# Data Analysis Notebook\n\nThis notebook demonstrates data analysis techniques."));
-    notebook.cells.push(Cell::code("import pandas as pd\nimport numpy as np"));
+    notebook.cells.push(Cell::markdown(
+        "# Data Analysis Notebook\n\nThis notebook demonstrates data analysis techniques.",
+    ));
+    notebook
+        .cells
+        .push(Cell::code("import pandas as pd\nimport numpy as np"));
     notebook.cells.push(Cell::markdown("## Loading Data"));
-    notebook.cells.push(Cell::code("df = pd.read_csv('data.csv')\ndf.head()"));
+    notebook
+        .cells
+        .push(Cell::code("df = pd.read_csv('data.csv')\ndf.head()"));
     notebook.cells.push(Cell::markdown("## Analysis"));
     notebook.cells.push(Cell::code("df.describe()"));
 
@@ -30,7 +36,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         language: "python".to_string(),
     });
 
-    println!("Set kernel to: {}", notebook.metadata.kernelspec.as_ref().unwrap().display_name);
+    println!(
+        "Set kernel to: {}",
+        notebook.metadata.kernelspec.as_ref().unwrap().display_name
+    );
 
     // Insert a cell at a specific position
     println!("\n=== Inserting a Cell ===");
@@ -41,15 +50,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Remove a cell
     println!("\n=== Removing a Cell ===");
-    let removed = notebook.cells.remove(5);  // Remove "## Analysis" markdown
-    println!("Removed cell with content: {}...",
-             removed.source_string().chars().take(30).collect::<String>());
+    let removed = notebook.cells.remove(5); // Remove "## Analysis" markdown
+    println!(
+        "Removed cell with content: {}...",
+        removed.source_string().chars().take(30).collect::<String>()
+    );
     println!("New cell count: {}", notebook.len());
 
     // Modify an existing cell's source
     println!("\n=== Modifying Cell Content ===");
     if let Some(cell) = notebook.cells.get_mut(0) {
-        *cell = Cell::markdown("# Advanced Data Analysis\n\nUpdated title for our analysis notebook.");
+        *cell =
+            Cell::markdown("# Advanced Data Analysis\n\nUpdated title for our analysis notebook.");
         println!("Updated first cell content");
     }
 
@@ -64,7 +76,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("\n=== Creating Code-Only Version ===");
     let mut code_only = Notebook::new();
     code_only.metadata = notebook.metadata.clone();
-    code_only.cells = notebook.cells.iter()
+    code_only.cells = notebook
+        .cells
+        .iter()
         .filter(|c| c.is_code())
         .cloned()
         .collect();

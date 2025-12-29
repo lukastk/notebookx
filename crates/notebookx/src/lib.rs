@@ -33,6 +33,6 @@ pub use cell::{Cell, CellMetadata};
 pub use clean::CleanOptions;
 pub use error::{NotebookError, ParseError, SerializeError};
 pub use formats::NotebookFormat;
-pub use metadata::{NotebookMetadata, KernelSpec, LanguageInfo};
+pub use metadata::{KernelSpec, LanguageInfo, NotebookMetadata};
 pub use notebook::Notebook;
 pub use output::{MimeBundle, MimeData, MultilineString, Output, StreamName};

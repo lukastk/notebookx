@@ -54,11 +54,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Demonstrate format detection from path
     println!("\n=== Format Detection ===");
-    let paths = [
-        "notebook.ipynb",
-        "script.pct.py",
-        "unknown.txt",
-    ];
+    let paths = ["notebook.ipynb", "script.pct.py", "unknown.txt"];
 
     for path_str in paths {
         let path = Path::new(path_str);

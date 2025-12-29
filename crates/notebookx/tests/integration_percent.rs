@@ -16,7 +16,11 @@ const EXAMPLE_IPYNB: &str = concat!(
 #[test]
 fn test_parse_real_percent_file() {
     let path = Path::new(EXAMPLE_PERCENT);
-    assert!(path.exists(), "Example percent file not found at {:?}", path);
+    assert!(
+        path.exists(),
+        "Example percent file not found at {:?}",
+        path
+    );
 
     let content = std::fs::read_to_string(path).unwrap();
     let notebook = NotebookFormat::Percent.parse(&content).unwrap();

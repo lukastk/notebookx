@@ -186,7 +186,14 @@ where
             to_fmt,
             strip_outputs,
             strip_metadata,
-        } => run_convert(&input, &output, from_fmt, to_fmt, strip_outputs, strip_metadata),
+        } => run_convert(
+            &input,
+            &output,
+            from_fmt,
+            to_fmt,
+            strip_outputs,
+            strip_metadata,
+        ),
         Commands::Clean {
             input,
             output,
@@ -347,6 +354,7 @@ fn run_convert(
 }
 
 /// Run the clean command
+#[allow(clippy::too_many_arguments)]
 fn run_clean(
     input: &Path,
     output: Option<&Path>,

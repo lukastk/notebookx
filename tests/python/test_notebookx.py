@@ -142,9 +142,12 @@ class TestCleanOptions:
     def test_for_vcs(self):
         """Test for_vcs preset."""
         options = CleanOptions.for_vcs()
-        assert options.remove_outputs
+        # for_vcs preserves outputs but removes metadata/execution counts
+        assert not options.remove_outputs
         assert options.remove_execution_counts
-        assert not options.remove_cell_metadata
+        assert options.remove_cell_metadata
+        assert options.remove_output_metadata
+        assert options.remove_output_execution_counts
 
     def test_strip_all(self):
         """Test strip_all preset."""

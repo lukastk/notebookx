@@ -53,7 +53,8 @@ fn main() {
     println!("Original notebook:");
     print_notebook_info(&notebook);
 
-    // Clean for version control (removes outputs and execution counts)
+    // Clean for version control (removes cell metadata, execution counts, and output metadata)
+    // Outputs are preserved so rendered content remains visible
     let vcs_options = CleanOptions::for_vcs();
     let vcs_clean = notebook.clean(&vcs_options);
 

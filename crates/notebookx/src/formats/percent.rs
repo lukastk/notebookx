@@ -160,11 +160,12 @@ fn parse_header(input: &str) -> Result<(NotebookMetadata, &str), ParseError> {
     let after_first_marker = &input[header_start + 5..];
 
     // Find the closing marker
-    let header_end = after_first_marker
-        .find("\n# ---")
-        .ok_or_else(|| ParseError::InvalidStructure {
-            message: "YAML header not closed (missing '# ---')".to_string(),
-        })?;
+    let header_end =
+        after_first_marker
+            .find("\n# ---")
+            .ok_or_else(|| ParseError::InvalidStructure {
+                message: "YAML header not closed (missing '# ---')".to_string(),
+            })?;
 
     let header_content = &after_first_marker[..header_end];
     let remaining = &after_first_marker[header_end + 6..]; // Skip "\n# ---"
@@ -184,10 +185,10 @@ fn parse_yaml_header(content: &str) -> Result<NotebookMetadata, ParseError> {
     let yaml_lines: Vec<&str> = content
         .lines()
         .map(|line| {
-            if line.starts_with("# ") {
-                &line[2..]
-            } else if line.starts_with("#") {
-                &line[1..]
+            if let Some(stripped) = line.strip_prefix("# ") {
+                stripped
+            } else if let Some(stripped) = line.strip_prefix("#") {
+                stripped
             } else {
                 line
             }
@@ -263,7 +264,10 @@ fn default_metadata() -> NotebookMetadata {
 }
 
 /// Serialize notebook metadata to a YAML header.
-fn serialize_header(metadata: &NotebookMetadata, style: HeaderStyle) -> Result<String, SerializeError> {
+fn serialize_header(
+    metadata: &NotebookMetadata,
+    style: HeaderStyle,
+) -> Result<String, SerializeError> {
     if style == HeaderStyle::None {
         return Ok(String::new());
     }
@@ -430,9 +434,15 @@ fn parse_cell_marker(line: &str) -> Result<(CellType, CellMetadata), ParseError>
 
     // Determine cell type
     let (cell_type, rest) = if rest.starts_with("[markdown]") {
-        (CellType::Markdown, rest.strip_prefix("[markdown]").unwrap().trim())
+        (
+            CellType::Markdown,
+            rest.strip_prefix("[markdown]").unwrap().trim(),
+        )
     } else if rest.starts_with("[md]") {
-        (CellType::Markdown, rest.strip_prefix("[md]").unwrap().trim())
+        (
+            CellType::Markdown,
+            rest.strip_prefix("[md]").unwrap().trim(),
+        )
     } else if rest.starts_with("[raw]") {
         (CellType::Raw, rest.strip_prefix("[raw]").unwrap().trim())
     } else {
@@ -502,19 +512,20 @@ fn uncomment_lines(content: &str) -> String {
 
     // Find where the actual content ends (trim trailing empty comment lines)
     let mut end = lines.len();
-    while end > 0 && (lines[end - 1] == "#" || lines[end - 1] == "# " || lines[end - 1].is_empty()) {
+    while end > 0 && (lines[end - 1] == "#" || lines[end - 1] == "# " || lines[end - 1].is_empty())
+    {
         end -= 1;
     }
 
     lines[..end]
         .iter()
         .map(|line| {
-            if line.starts_with("# ") {
-                &line[2..]
+            if let Some(stripped) = line.strip_prefix("# ") {
+                stripped
             } else if *line == "#" {
                 ""
-            } else if line.starts_with("#") {
-                &line[1..]
+            } else if let Some(stripped) = line.strip_prefix("#") {
+                stripped
             } else {
                 *line
             }

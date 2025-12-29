@@ -114,9 +114,11 @@ notebookx/                          # Repository root
 │       ├── __init__.pyi            # Type stubs
 │       └── py.typed                # PEP 561 marker
 ├── crates/
-│   ├── notebookx/                  # Core Rust library
+│   ├── notebookx/                  # Core Rust library + CLI
 │   │   └── src/
 │   │       ├── lib.rs              # Public API re-exports
+│   │       ├── main.rs             # CLI entry point (requires "cli" feature)
+│   │       ├── cli.rs              # CLI implementation (optional)
 │   │       ├── notebook.rs         # Core Notebook struct
 │   │       ├── cell.rs             # Cell types
 │   │       ├── output.rs           # Output types
@@ -127,9 +129,6 @@ notebookx/                          # Repository root
 │   │           ├── mod.rs          # Format enum and traits
 │   │           ├── ipynb.rs        # ipynb JSON format
 │   │           └── percent.rs      # Percent format
-│   ├── nbx/                        # CLI binary
-│   │   └── src/
-│   │       └── main.rs
 │   └── notebookx-py/               # PyO3 bindings crate
 │       └── src/
 │           └── lib.rs              # PyO3 module definition

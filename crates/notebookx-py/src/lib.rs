@@ -3,8 +3,8 @@
 //! This module provides PyO3 bindings to expose the notebookx library
 //! to Python.
 
+use pyo3::exceptions::{PyIOError, PyValueError};
 use pyo3::prelude::*;
-use pyo3::exceptions::{PyValueError, PyIOError};
 use std::collections::HashSet;
 use std::path::PathBuf;
 
@@ -96,6 +96,7 @@ impl CleanOptions {
         allowed_cell_metadata_keys = None,
         allowed_notebook_metadata_keys = None,
     ))]
+    #[allow(clippy::too_many_arguments)]
     fn new(
         remove_outputs: bool,
         remove_execution_counts: bool,
@@ -177,9 +178,13 @@ impl From<&CleanOptions> for notebookx::CleanOptions {
             preserve_cell_ids: opts.preserve_cell_ids,
             remove_output_metadata: opts.remove_output_metadata,
             remove_output_execution_counts: opts.remove_output_execution_counts,
-            allowed_cell_metadata_keys: opts.allowed_cell_metadata_keys.as_ref()
+            allowed_cell_metadata_keys: opts
+                .allowed_cell_metadata_keys
+                .as_ref()
                 .map(|v| v.iter().cloned().collect::<HashSet<_>>()),
-            allowed_notebook_metadata_keys: opts.allowed_notebook_metadata_keys.as_ref()
+            allowed_notebook_metadata_keys: opts
+                .allowed_notebook_metadata_keys
+                .as_ref()
                 .map(|v| v.iter().cloned().collect::<HashSet<_>>()),
         }
     }
@@ -220,17 +225,19 @@ impl Notebook {
 
         let fmt = match format {
             Some(f) => f.into(),
-            None => notebookx::NotebookFormat::from_path(&path_buf)
-                .ok_or_else(|| PyValueError::new_err(format!(
+            None => notebookx::NotebookFormat::from_path(&path_buf).ok_or_else(|| {
+                PyValueError::new_err(format!(
                     "Cannot infer format from '{}'. Specify format explicitly.",
                     path
-                )))?,
+                ))
+            })?,
         };
 
         let content = std::fs::read_to_string(&path_buf)
             .map_err(|e| PyIOError::new_err(format!("Failed to read '{}': {}", path, e)))?;
 
-        let notebook = fmt.parse(&content)
+        let notebook = fmt
+            .parse(&content)
             .map_err(|e| PyValueError::new_err(format!("Failed to parse '{}': {}", path, e)))?;
 
         Ok(Notebook { inner: notebook })
@@ -250,7 +257,8 @@ impl Notebook {
     #[staticmethod]
     fn from_string(content: &str, format: Format) -> PyResult<Self> {
         let fmt: notebookx::NotebookFormat = format.into();
-        let notebook = fmt.parse(content)
+        let notebook = fmt
+            .parse(content)
             .map_err(|e| PyValueError::new_err(format!("Failed to parse content: {}", e)))?;
 
         Ok(Notebook { inner: notebook })
@@ -271,14 +279,16 @@ impl Notebook {
 
         let fmt = match format {
             Some(f) => f.into(),
-            None => notebookx::NotebookFormat::from_path(&path_buf)
-                .ok_or_else(|| PyValueError::new_err(format!(
+            None => notebookx::NotebookFormat::from_path(&path_buf).ok_or_else(|| {
+                PyValueError::new_err(format!(
                     "Cannot infer format from '{}'. Specify format explicitly.",
                     path
-                )))?,
+                ))
+            })?,
         };
 
-        let content = fmt.serialize(&self.inner)
+        let content = fmt
+            .serialize(&self.inner)
             .map_err(|e| PyValueError::new_err(format!("Failed to serialize: {}", e)))?;
 
         std::fs::write(&path_buf, content)
@@ -315,9 +325,7 @@ impl Notebook {
     ///     A new cleaned notebook.
     #[pyo3(signature = (options = None))]
     fn clean(&self, options: Option<&CleanOptions>) -> Self {
-        let rust_options = options
-            .map(|o| o.into())
-            .unwrap_or_default();
+        let rust_options = options.map(|o| o.into()).unwrap_or_default();
 
         Notebook {
             inner: self.inner.clean(&rust_options),
@@ -425,6 +433,7 @@ fn convert(
     remove_output_metadata = false,
     remove_output_execution_counts = false,
 ))]
+#[allow(clippy::too_many_arguments)]
 fn clean_notebook(
     input_path: &str,
     output_path: Option<&str>,

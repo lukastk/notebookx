@@ -68,9 +68,12 @@ fn test_convert_ipynb_to_percent() {
         .output()
         .expect("Failed to execute nbx");
 
-    assert!(output.status.success(), "stdout: {}, stderr: {}",
-            String::from_utf8_lossy(&output.stdout),
-            String::from_utf8_lossy(&output.stderr));
+    assert!(
+        output.status.success(),
+        "stdout: {}, stderr: {}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
 
     let content = std::fs::read_to_string(&output_path).unwrap();
     assert!(content.contains("# %%"));
@@ -92,9 +95,12 @@ fn test_convert_percent_to_ipynb() {
         .output()
         .expect("Failed to execute nbx");
 
-    assert!(output.status.success(), "stdout: {}, stderr: {}",
-            String::from_utf8_lossy(&output.stdout),
-            String::from_utf8_lossy(&output.stderr));
+    assert!(
+        output.status.success(),
+        "stdout: {}, stderr: {}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
 
     let content = std::fs::read_to_string(&output_path).unwrap();
     assert!(content.contains("\"cells\""));
@@ -157,11 +163,7 @@ fn test_convert_explicit_format() {
 #[test]
 fn test_clean_remove_outputs() {
     let output = Command::new(NBX_BIN)
-        .args([
-            "clean",
-            EXAMPLE_IPYNB,
-            "--remove-outputs",
-        ])
+        .args(["clean", EXAMPLE_IPYNB, "--remove-outputs"])
         .output()
         .expect("Failed to execute nbx");
 
@@ -181,11 +183,7 @@ fn test_clean_remove_outputs() {
 #[test]
 fn test_clean_remove_execution_counts() {
     let output = Command::new(NBX_BIN)
-        .args([
-            "clean",
-            EXAMPLE_IPYNB,
-            "--remove-execution-counts",
-        ])
+        .args(["clean", EXAMPLE_IPYNB, "--remove-execution-counts"])
         .output()
         .expect("Failed to execute nbx");
 
@@ -196,7 +194,10 @@ fn test_clean_remove_execution_counts() {
     let cells = notebook["cells"].as_array().unwrap();
     for cell in cells {
         if cell["cell_type"] == "code" {
-            assert!(cell["execution_count"].is_null(), "Execution count should be null");
+            assert!(
+                cell["execution_count"].is_null(),
+                "Execution count should be null"
+            );
         }
     }
 }
@@ -247,12 +248,7 @@ fn test_error_missing_file() {
 #[test]
 fn test_error_format_inference_stdin() {
     let output = Command::new(NBX_BIN)
-        .args([
-            "convert",
-            "-",
-            "--output",
-            "/tmp/test.ipynb",
-        ])
+        .args(["convert", "-", "--output", "/tmp/test.ipynb"])
         .output()
         .expect("Failed to execute nbx");
 
@@ -266,12 +262,7 @@ fn test_error_format_inference_stdin() {
 #[test]
 fn test_error_unknown_extension() {
     let output = Command::new(NBX_BIN)
-        .args([
-            "convert",
-            "test.unknown",
-            "--output",
-            "/tmp/test.ipynb",
-        ])
+        .args(["convert", "test.unknown", "--output", "/tmp/test.ipynb"])
         .output()
         .expect("Failed to execute nbx");
 
@@ -302,7 +293,12 @@ fn test_stdin_stdout_conversion() {
         .expect("Failed to spawn nbx");
 
     use std::io::Write;
-    child.stdin.take().unwrap().write_all(input.as_bytes()).unwrap();
+    child
+        .stdin
+        .take()
+        .unwrap()
+        .write_all(input.as_bytes())
+        .unwrap();
 
     let output = child.wait_with_output().unwrap();
     assert!(output.status.success());

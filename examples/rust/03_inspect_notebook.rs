@@ -21,7 +21,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Inspect notebook metadata
     println!("=== Notebook Metadata ===");
-    println!("nbformat: {}.{}", notebook.nbformat, notebook.nbformat_minor);
+    println!(
+        "nbformat: {}.{}",
+        notebook.nbformat, notebook.nbformat_minor
+    );
 
     if let Some(ref kernelspec) = notebook.metadata.kernelspec {
         println!("\nKernel Specification:");
@@ -52,7 +55,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 continue;
             }
 
-            println!("\nCell {} (execution_count: {:?}):", i, cell.execution_count());
+            println!(
+                "\nCell {} (execution_count: {:?}):",
+                i,
+                cell.execution_count()
+            );
 
             // Show a preview of the source
             let source = cell.source_string();
@@ -63,8 +70,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             for (j, output) in outputs.iter().enumerate() {
                 println!("  Output {}:", j);
                 match output {
-                    notebookx::Output::ExecuteResult { data, execution_count, .. } => {
-                        println!("    Type: ExecuteResult (execution_count: {:?})", execution_count);
+                    notebookx::Output::ExecuteResult {
+                        data,
+                        execution_count,
+                        ..
+                    } => {
+                        println!(
+                            "    Type: ExecuteResult (execution_count: {:?})",
+                            execution_count
+                        );
                         print_mime_bundle(data);
                     }
                     notebookx::Output::DisplayData { data, .. } => {
