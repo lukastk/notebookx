@@ -14,3 +14,7 @@ path = "src/main.rs"
 notebookx = { workspace = true }
 clap = { workspace = true }
 thiserror = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3"
+serde_json = { workspace = true }
