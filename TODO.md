@@ -204,23 +204,38 @@ Parsing and serialization are symmetric operations. Each format implements:
 - [ ] Test type stubs are correct (mypy/pyright check)
 - [ ] Integration test: round-trip through Python API
 
-### Milestone 6: Documentation & Benchmarks
+### Milestone 6: CI/CD & Wheel Building
+
+**GitHub Actions CI:**
+- [ ] Create `.github/workflows/ci.yml` for continuous integration
+  - Run Rust tests on push/PR
+  - Run Python tests on push/PR
+  - Test on ubuntu-latest, macos-latest, windows-latest
+
+**Release Workflow & Wheel Building:**
+- [ ] Create `.github/workflows/release.yml` triggered on git tags
+- [ ] Build wheels for all major platforms using maturin:
+  - Linux x86_64 (manylinux)
+  - Linux ARM64 (manylinux)
+  - macOS x86_64 (Intel)
+  - macOS ARM64 (Apple Silicon)
+  - Windows x86_64
+- [ ] Build source distribution (sdist)
+- [ ] Publish to PyPI on release
+- [ ] Publish to crates.io on release (optional)
+
+**Notes:**
+- Using `abi3-py38` means one wheel per platform works for Python 3.8+
+- Use `maturin build --release` for optimized builds
+- Use `maturin publish` for PyPI upload (requires PYPI_API_TOKEN secret)
+
+### Milestone 7: Documentation
 
 **Documentation:**
 - [ ] README with installation and usage examples
 - [ ] API documentation (rustdoc)
 - [ ] Python docstrings and API docs
 - [ ] Examples directory with common use cases
-
-**Benchmarks:**
-- [ ] Set up criterion benchmark suite
-- [ ] Benchmark: parse small notebook (< 10KB)
-- [ ] Benchmark: parse medium notebook (100KB - 1MB)
-- [ ] Benchmark: parse large notebook (> 1MB)
-- [ ] Benchmark: serialize to ipynb
-- [ ] Benchmark: serialize to percent
-- [ ] Benchmark: clean notebook
-- [ ] Compare with nbconvert/jupytext (external script)
 
 ---
 
