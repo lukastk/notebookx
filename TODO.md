@@ -229,13 +229,13 @@ Parsing and serialization are symmetric operations. Each format implements:
 - Use `maturin build --release` for optimized builds
 - Use `maturin publish` for PyPI upload (requires PYPI_API_TOKEN secret)
 
-### Milestone 7: Documentation
+### Milestone 7: Documentation ✓
 
 **Documentation:**
-- [ ] README with installation and usage examples
-- [ ] API documentation (rustdoc)
-- [ ] Python docstrings and API docs
-- [ ] Examples directory with common use cases
+- [x] README with installation and usage examples
+- [x] API documentation (rustdoc)
+- [x] Python docstrings and API docs
+- [x] Examples directory with common use cases
 
 ---
 
