@@ -148,4 +148,6 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Publish notebookx to crates.io
-        run: cargo publish --package notebookx --all-features --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: cargo publish --package notebookx --all-features
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
