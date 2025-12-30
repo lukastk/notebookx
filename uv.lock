@@ -2129,7 +2129,7 @@ wheels = [
 ]
 
 [[package]]
-name = "notebookx"
+name = "notebookx-py"
 version = "0.1.0"
 source = { editable = "." }
 
