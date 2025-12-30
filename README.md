@@ -17,7 +17,7 @@ notebookx is a Rust-based alternative to Python's nbconvert, providing fast note
 ### Python
 
 ```bash
-pip install notebookx
+pip install notebookx-py
 ```
 
 ### Rust
