@@ -301,6 +301,50 @@ class TestFormat:
         assert Format.Ipynb == Format.Ipynb
         assert Format.Ipynb != Format.Percent
 
+    def test_from_extension_ipynb(self):
+        """Test from_extension for ipynb."""
+        assert Format.from_extension("ipynb") == Format.Ipynb
+        assert Format.from_extension(".ipynb") == Format.Ipynb
+
+    def test_from_extension_percent(self):
+        """Test from_extension for percent."""
+        assert Format.from_extension("pct.py") == Format.Percent
+        assert Format.from_extension(".pct.py") == Format.Percent
+
+    def test_from_extension_unknown(self):
+        """Test from_extension returns None for unknown extension."""
+        assert Format.from_extension("txt") is None
+        assert Format.from_extension("py") is None
+        assert Format.from_extension("md") is None
+
+    def test_from_path_ipynb(self):
+        """Test from_path for ipynb files."""
+        assert Format.from_path("notebook.ipynb") == Format.Ipynb
+        assert Format.from_path("/path/to/notebook.ipynb") == Format.Ipynb
+
+    def test_from_path_percent(self):
+        """Test from_path for percent files."""
+        assert Format.from_path("notebook.pct.py") == Format.Percent
+        assert Format.from_path("/path/to/notebook.pct.py") == Format.Percent
+
+    def test_from_path_unknown(self):
+        """Test from_path returns None for unknown files."""
+        assert Format.from_path("README.md") is None
+        assert Format.from_path("script.py") is None
+
+    def test_extension_ipynb(self):
+        """Test extension() for Ipynb format."""
+        assert Format.Ipynb.extension() == "ipynb"
+
+    def test_extension_percent(self):
+        """Test extension() for Percent format."""
+        assert Format.Percent.extension() == "pct.py"
+
+    def test_repr(self):
+        """Test format string representation."""
+        assert "Ipynb" in repr(Format.Ipynb)
+        assert "Percent" in repr(Format.Percent)
+
 
 class TestRoundTrip:
     """Tests for round-trip conversions."""

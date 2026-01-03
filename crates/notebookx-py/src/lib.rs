@@ -18,6 +18,53 @@ pub enum Format {
     Percent,
 }
 
+#[pymethods]
+impl Format {
+    /// Infer the format from a file extension.
+    ///
+    /// Args:
+    ///     ext: File extension (e.g., "ipynb", "pct.py"). Leading dot is optional.
+    ///
+    /// Returns:
+    ///     The inferred format, or None if the extension is not recognized.
+    #[staticmethod]
+    fn from_extension(ext: &str) -> Option<Format> {
+        let ext = ext.trim_start_matches('.');
+        notebookx::NotebookFormat::from_extension(ext).map(|f| f.into())
+    }
+
+    /// Infer the format from a file path.
+    ///
+    /// Handles compound extensions like `.pct.py`.
+    ///
+    /// Args:
+    ///     path: Path to a notebook file.
+    ///
+    /// Returns:
+    ///     The inferred format, or None if the format cannot be determined.
+    #[staticmethod]
+    fn from_path(path: &str) -> Option<Format> {
+        let path_buf = PathBuf::from(path);
+        notebookx::NotebookFormat::from_path(&path_buf).map(|f| f.into())
+    }
+
+    /// Get the canonical file extension for this format.
+    ///
+    /// Returns:
+    ///     The file extension (e.g., "ipynb", "pct.py").
+    fn extension(&self) -> &'static str {
+        let fmt: notebookx::NotebookFormat = (*self).into();
+        fmt.extension()
+    }
+
+    fn __repr__(&self) -> &'static str {
+        match self {
+            Format::Ipynb => "Format.Ipynb",
+            Format::Percent => "Format.Percent",
+        }
+    }
+}
+
 impl From<Format> for notebookx::NotebookFormat {
     fn from(f: Format) -> Self {
         match f {

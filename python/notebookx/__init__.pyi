@@ -8,6 +8,40 @@ class Format(Enum):
     Ipynb = ...
     Percent = ...
 
+    @staticmethod
+    def from_extension(ext: str) -> Optional["Format"]:
+        """Infer the format from a file extension.
+
+        Args:
+            ext: File extension (e.g., "ipynb", "pct.py"). Leading dot is optional.
+
+        Returns:
+            The inferred format, or None if the extension is not recognized.
+        """
+        ...
+
+    @staticmethod
+    def from_path(path: str) -> Optional["Format"]:
+        """Infer the format from a file path.
+
+        Handles compound extensions like `.pct.py`.
+
+        Args:
+            path: Path to a notebook file.
+
+        Returns:
+            The inferred format, or None if the format cannot be determined.
+        """
+        ...
+
+    def extension(self) -> str:
+        """Get the canonical file extension for this format.
+
+        Returns:
+            The file extension (e.g., "ipynb", "pct.py").
+        """
+        ...
+
 class CleanOptions:
     """Options for cleaning a notebook."""
 
