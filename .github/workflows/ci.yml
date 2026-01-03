@@ -70,46 +70,31 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
-            ${{ runner.os }}-cargo-
+            ${{ runner.os }}-cargo-registry-
 
-      - name: Install maturin
-        run: pip install maturin
+      - name: Create virtual environment and install dependencies
+        run: |
+          python -m venv test-venv
 
-      - name: Build Python extension
-        run: maturin build --release
+      - name: Install and test (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          source test-venv/bin/activate
+          pip install maturin pytest
+          maturin develop --release
+          pytest tests/python -v
         env:
           PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
 
-      - name: Create virtual environment
-        run: python -m venv test-venv
-
-      - name: Install wheel and test dependencies (Unix)
-        if: runner.os != 'Windows'
-        run: |
-          source test-venv/bin/activate
-          pip install target/wheels/*.whl
-          pip install pytest
-
-      - name: Install wheel and test dependencies (Windows)
+      - name: Install and test (Windows)
         if: runner.os == 'Windows'
-        run: |
-          test-venv\Scripts\activate
-          pip install (Get-ChildItem target/wheels/*.whl).FullName
-          pip install pytest
         shell: pwsh
-
-      - name: Run Python tests (Unix)
-        if: runner.os != 'Windows'
         run: |
-          source test-venv/bin/activate
+          test-venv\Scripts\Activate.ps1
+          pip install maturin pytest
+          maturin develop --release
           pytest tests/python -v
-
-      - name: Run Python tests (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          test-venv\Scripts\activate
-          pytest tests/python -v
-        shell: pwsh
+        env:
+          PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
