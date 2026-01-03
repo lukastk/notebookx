@@ -8,39 +8,61 @@ class Format(Enum):
     Ipynb = ...
     Percent = ...
 
-    @staticmethod
-    def from_extension(ext: str) -> Optional["Format"]:
-        """Infer the format from a file extension.
 
-        Args:
-            ext: File extension (e.g., "ipynb", "pct.py"). Leading dot is optional.
+def format_from_extension(ext: str) -> Optional[Format]:
+    """Infer the format from a file extension.
 
-        Returns:
-            The inferred format, or None if the extension is not recognized.
-        """
-        ...
+    Args:
+        ext: File extension (e.g., "ipynb", "pct.py"). Leading dot is optional.
 
-    @staticmethod
-    def from_path(path: str) -> Optional["Format"]:
-        """Infer the format from a file path.
+    Returns:
+        The inferred format, or None if the extension is not recognized.
 
-        Handles compound extensions like `.pct.py`.
+    Example:
+        >>> format_from_extension("ipynb")
+        Format.Ipynb
+        >>> format_from_extension(".pct.py")
+        Format.Percent
+    """
+    ...
 
-        Args:
-            path: Path to a notebook file.
 
-        Returns:
-            The inferred format, or None if the format cannot be determined.
-        """
-        ...
+def format_from_path(path: str) -> Optional[Format]:
+    """Infer the format from a file path.
 
-    def extension(self) -> str:
-        """Get the canonical file extension for this format.
+    Handles compound extensions like `.pct.py`.
 
-        Returns:
-            The file extension (e.g., "ipynb", "pct.py").
-        """
-        ...
+    Args:
+        path: Path to a notebook file.
+
+    Returns:
+        The inferred format, or None if the format cannot be determined.
+
+    Example:
+        >>> format_from_path("notebook.ipynb")
+        Format.Ipynb
+        >>> format_from_path("/path/to/file.pct.py")
+        Format.Percent
+    """
+    ...
+
+
+def format_extension(format: Format) -> str:
+    """Get the canonical file extension for a format.
+
+    Args:
+        format: The notebook format.
+
+    Returns:
+        The file extension (e.g., "ipynb", "pct.py").
+
+    Example:
+        >>> format_extension(Format.Ipynb)
+        'ipynb'
+        >>> format_extension(Format.Percent)
+        'pct.py'
+    """
+    ...
 
 class CleanOptions:
     """Options for cleaning a notebook."""

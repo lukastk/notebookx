@@ -24,6 +24,9 @@ from notebookx._notebookx import (
     clean_notebook,
     run_cli,
     NotebookError,
+    format_from_extension,
+    format_from_path,
+    format_extension,
 )
 
 __all__ = [
@@ -34,6 +37,9 @@ __all__ = [
     "clean_notebook",
     "run_cli",
     "NotebookError",
+    "format_from_extension",
+    "format_from_path",
+    "format_extension",
 ]
 
 __version__ = "0.1.0"
