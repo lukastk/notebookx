@@ -8,8 +8,8 @@ use crate::metadata::NotebookMetadata;
 use crate::notebook::Notebook;
 use crate::output::{MimeBundle, MimeData, MultilineString, Output, OutputMetadata, StreamName};
 use crate::{ParseError, SerializeError};
+use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
 /// Parse a notebook from ipynb JSON format.
 pub fn parse(input: &str) -> Result<Notebook, ParseError> {
@@ -288,7 +288,8 @@ impl RawOutput {
 }
 
 /// Raw MIME bundle that handles both string and array values.
-type RawMimeBundle = HashMap<String, RawMimeData>;
+/// Uses IndexMap to preserve insertion order for consistent serialization.
+type RawMimeBundle = IndexMap<String, RawMimeData>;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(untagged)]

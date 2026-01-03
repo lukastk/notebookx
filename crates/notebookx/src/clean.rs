@@ -631,15 +631,16 @@ mod tests {
 
     fn create_test_notebook_with_output_metadata() -> Notebook {
         use crate::output::{MimeBundle, MimeData, OutputMetadata};
+        use indexmap::IndexMap;
 
         let mut notebook = Notebook::new();
 
         // Create output metadata
-        let mut output_metadata: OutputMetadata = std::collections::HashMap::new();
+        let mut output_metadata: OutputMetadata = IndexMap::new();
         output_metadata.insert("foo".to_string(), serde_json::json!("bar"));
 
         // Create MIME bundle
-        let mut data: MimeBundle = std::collections::HashMap::new();
+        let mut data: MimeBundle = IndexMap::new();
         data.insert("text/plain".to_string(), MimeData::String("42".to_string()));
 
         // Add a code cell with ExecuteResult output (has metadata and execution_count)

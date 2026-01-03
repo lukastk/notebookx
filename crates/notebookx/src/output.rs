@@ -1,7 +1,7 @@
 //! Output types for code cells.
 
+use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
 /// Output from executing a code cell.
 ///
@@ -65,7 +65,10 @@ pub enum StreamName {
 ///
 /// Each key is a MIME type (e.g., "text/plain", "image/png"),
 /// and the value is the content for that MIME type.
-pub type MimeBundle = HashMap<String, MimeData>;
+///
+/// Uses IndexMap to preserve insertion order, which is important
+/// for consistent serialization and idempotent operations.
+pub type MimeBundle = IndexMap<String, MimeData>;
 
 /// Data for a single MIME type in an output.
 ///
@@ -184,7 +187,9 @@ impl From<&str> for MultilineString {
 ///
 /// This is typically empty but can contain format-specific metadata
 /// like image dimensions.
-pub type OutputMetadata = HashMap<String, serde_json::Value>;
+///
+/// Uses IndexMap to preserve insertion order.
+pub type OutputMetadata = IndexMap<String, serde_json::Value>;
 
 /// Split a string into lines, preserving trailing newlines.
 ///
