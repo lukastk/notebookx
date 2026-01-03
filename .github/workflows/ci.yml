@@ -83,11 +83,33 @@ jobs:
         env:
           PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
 
-      - name: Install wheel and test dependencies
-        shell: bash
+      - name: Create virtual environment
+        run: python -m venv test-venv
+
+      - name: Install wheel and test dependencies (Unix)
+        if: runner.os != 'Windows'
         run: |
-          pip install --force-reinstall target/wheels/*.whl
+          source test-venv/bin/activate
+          pip install target/wheels/*.whl
           pip install pytest
 
-      - name: Run Python tests
-        run: pytest tests/python -v
+      - name: Install wheel and test dependencies (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          test-venv\Scripts\activate
+          pip install (Get-ChildItem target/wheels/*.whl).FullName
+          pip install pytest
+        shell: pwsh
+
+      - name: Run Python tests (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          source test-venv/bin/activate
+          pytest tests/python -v
+
+      - name: Run Python tests (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          test-venv\Scripts\activate
+          pytest tests/python -v
+        shell: pwsh
