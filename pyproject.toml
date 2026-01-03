@@ -7,7 +7,7 @@ name = "notebookx-py"
 version = "0.1.2"
 description = "Fast, lightweight notebook conversion library"
 readme = "README.md"
-license = { text = "MIT" }
+license = { file = "LICENSE" }
 requires-python = ">=3.8"
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -45,6 +45,8 @@ python-source = "python"
 # Module name matches the package
 module-name = "notebookx._notebookx"
 features = ["pyo3/extension-module"]
+# Include LICENSE in sdist
+include = ["LICENSE"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests/python"]
