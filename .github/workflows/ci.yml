@@ -86,7 +86,7 @@ jobs:
       - name: Install wheel and test dependencies
         shell: bash
         run: |
-          pip install target/wheels/*.whl
+          pip install --force-reinstall target/wheels/*.whl
           pip install pytest
 
       - name: Run Python tests
