@@ -20,9 +20,41 @@ pub fn parse(input: &str) -> Result<Notebook, ParseError> {
 /// Serialize a notebook to ipynb JSON format.
 pub fn serialize(notebook: &Notebook) -> Result<String, SerializeError> {
     let raw = RawNotebook::from_notebook(notebook);
-    let json = serde_json::to_string_pretty(&raw)?;
+
+    let json = if notebook.sort_keys {
+        // Convert to Value, sort keys recursively, then serialize
+        let value = serde_json::to_value(&raw)?;
+        let sorted = sort_json_keys(value);
+        serde_json::to_string_pretty(&sorted)?
+    } else {
+        serde_json::to_string_pretty(&raw)?
+    };
+
     // Ensure trailing newline (Jupyter convention)
     Ok(json + "\n")
+}
+
+/// Recursively sort all object keys in a JSON value.
+fn sort_json_keys(value: serde_json::Value) -> serde_json::Value {
+    match value {
+        serde_json::Value::Object(map) => {
+            // Collect keys, sort them, and rebuild the object
+            let mut entries: Vec<(String, serde_json::Value)> = map
+                .into_iter()
+                .map(|(k, v)| (k, sort_json_keys(v)))
+                .collect();
+            entries.sort_by(|a, b| a.0.cmp(&b.0));
+
+            let sorted_map: serde_json::Map<String, serde_json::Value> =
+                entries.into_iter().collect();
+            serde_json::Value::Object(sorted_map)
+        }
+        serde_json::Value::Array(arr) => {
+            serde_json::Value::Array(arr.into_iter().map(sort_json_keys).collect())
+        }
+        // Primitives are returned as-is
+        other => other,
+    }
 }
 
 // ============================================================================
@@ -53,6 +85,7 @@ impl RawNotebook {
             metadata: self.metadata,
             nbformat: self.nbformat,
             nbformat_minor: self.nbformat_minor,
+            sort_keys: false,
         })
     }
 
@@ -787,5 +820,68 @@ mod tests {
         assert_eq!(reparsed.cells[0].source_string(), "# First");
         assert_eq!(reparsed.cells[1].source_string(), "second()");
         assert_eq!(reparsed.cells[2].source_string(), "# Third");
+    }
+
+    #[test]
+    fn test_serialize_sort_keys() {
+        let mut notebook = Notebook::new();
+        notebook.cells.push(Cell::code("x = 1"));
+        notebook.sort_keys = true;
+
+        let serialized = serialize(&notebook).unwrap();
+
+        // Check that top-level keys are sorted alphabetically
+        // "cells" should come before "metadata" which comes before "nbformat"
+        let cells_pos = serialized.find("\"cells\"").unwrap();
+        let metadata_pos = serialized.find("\"metadata\"").unwrap();
+        let nbformat_pos = serialized.find("\"nbformat\"").unwrap();
+        let nbformat_minor_pos = serialized.find("\"nbformat_minor\"").unwrap();
+
+        assert!(
+            cells_pos < metadata_pos,
+            "cells should come before metadata"
+        );
+        assert!(
+            metadata_pos < nbformat_pos,
+            "metadata should come before nbformat"
+        );
+        assert!(
+            nbformat_pos < nbformat_minor_pos,
+            "nbformat should come before nbformat_minor"
+        );
+
+        // Verify round-trip still works
+        let reparsed = parse(&serialized).unwrap();
+        assert_eq!(reparsed.cells[0].source_string(), "x = 1");
+    }
+
+    #[test]
+    fn test_serialize_sort_keys_with_cell_fields() {
+        let mut notebook = Notebook::new();
+        notebook.cells.push(Cell::Code {
+            source: MultilineString::from_string("x = 1".to_string()),
+            execution_count: Some(1),
+            outputs: vec![],
+            metadata: CellMetadata::default(),
+            id: Some("test-id".to_string()),
+        });
+        notebook.sort_keys = true;
+
+        let serialized = serialize(&notebook).unwrap();
+
+        // Check that cell keys are sorted alphabetically
+        // "cell_type" < "execution_count" < "id" < "metadata" < "outputs" < "source"
+        let cell_type_pos = serialized.find("\"cell_type\"").unwrap();
+        let exec_count_pos = serialized.find("\"execution_count\"").unwrap();
+        let id_pos = serialized.find("\"id\"").unwrap();
+
+        assert!(
+            cell_type_pos < exec_count_pos,
+            "cell_type should come before execution_count"
+        );
+        assert!(
+            exec_count_pos < id_pos,
+            "execution_count should come before id"
+        );
     }
 }

@@ -28,6 +28,9 @@ pub struct Notebook {
     pub nbformat: u8,
     /// Minor version of the notebook format.
     pub nbformat_minor: u8,
+    /// Whether to sort keys alphabetically when serializing to JSON.
+    /// This is useful for VCS to produce consistent diffs.
+    pub sort_keys: bool,
 }
 
 impl Notebook {
@@ -41,6 +44,7 @@ impl Notebook {
             metadata: NotebookMetadata::default(),
             nbformat: 4,
             nbformat_minor: 5,
+            sort_keys: false,
         }
     }
 
@@ -51,6 +55,7 @@ impl Notebook {
             metadata: NotebookMetadata::default(),
             nbformat: 4,
             nbformat_minor: 5,
+            sort_keys: false,
         }
     }
 

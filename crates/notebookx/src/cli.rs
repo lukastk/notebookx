@@ -116,6 +116,10 @@ enum Commands {
         #[arg(long)]
         normalize_cell_ids: bool,
 
+        /// Sort JSON keys alphabetically for consistent diffs
+        #[arg(long)]
+        sort_keys: bool,
+
         /// Keep only these metadata keys (comma-separated)
         #[arg(long, value_delimiter = ',')]
         keep_only: Option<Vec<String>>,
@@ -211,6 +215,7 @@ where
             remove_output_metadata,
             remove_output_execution_counts,
             normalize_cell_ids,
+            sort_keys,
             keep_only,
         } => run_clean(
             &input,
@@ -225,6 +230,7 @@ where
             remove_output_metadata,
             remove_output_execution_counts,
             normalize_cell_ids,
+            sort_keys,
             keep_only,
         ),
     };
@@ -374,6 +380,7 @@ fn run_clean(
     remove_output_metadata: bool,
     remove_output_execution_counts: bool,
     normalize_cell_ids: bool,
+    sort_keys: bool,
     keep_only: Option<Vec<String>>,
 ) -> Result<(), CliError> {
     let format = NotebookFormat::from_path(input).ok_or_else(|| {
@@ -411,6 +418,7 @@ fn run_clean(
         remove_output_metadata,
         remove_output_execution_counts,
         normalize_cell_ids,
+        sort_keys,
         allowed_cell_metadata_keys: allowed_keys.clone(),
         allowed_notebook_metadata_keys: allowed_keys,
     };

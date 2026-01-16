@@ -60,6 +60,7 @@ pub fn parse(input: &str) -> Result<Notebook, ParseError> {
         metadata,
         nbformat: 4,
         nbformat_minor: 5,
+        sort_keys: false,
     })
 }
 

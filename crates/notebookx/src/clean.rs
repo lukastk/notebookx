@@ -71,6 +71,10 @@ pub struct CleanOptions {
     /// Normalize cell IDs to "cell{i}" format where i is the cell index.
     /// When enabled, all cells will have IDs like "cell0", "cell1", etc.
     pub normalize_cell_ids: bool,
+
+    /// Sort JSON keys alphabetically when serializing.
+    /// This is useful for VCS to produce consistent diffs.
+    pub sort_keys: bool,
 }
 
 impl CleanOptions {
@@ -82,7 +86,7 @@ impl CleanOptions {
     /// Create options that remove cell metadata and execution counts, and output metadata and execution counts.
     ///
     /// This is useful for preparing notebooks for version control.
-    /// Cell IDs are normalized to "cell{i}" format for consistent diffs.
+    /// Cell IDs are normalized to "cell{i}" format and JSON keys are sorted for consistent diffs.
     pub fn for_vcs() -> Self {
         Self {
             remove_cell_metadata: true,
@@ -90,6 +94,7 @@ impl CleanOptions {
             remove_output_metadata: true,
             remove_output_execution_counts: true,
             normalize_cell_ids: true,
+            sort_keys: true,
             ..Default::default()
         }
     }
@@ -110,6 +115,7 @@ impl CleanOptions {
             remove_output_metadata: true,
             remove_output_execution_counts: true,
             normalize_cell_ids: false,
+            sort_keys: false,
         }
     }
 }
@@ -150,6 +156,7 @@ impl Notebook {
             metadata,
             nbformat: self.nbformat,
             nbformat_minor: self.nbformat_minor,
+            sort_keys: options.sort_keys,
         }
     }
 }
@@ -874,5 +881,38 @@ mod tests {
         // for_vcs should normalize cell IDs
         assert_eq!(cleaned.cells[0].id(), Some("cell0"));
         assert_eq!(cleaned.cells[1].id(), Some("cell1"));
+    }
+
+    #[test]
+    fn test_clean_sort_keys() {
+        let notebook = create_test_notebook();
+        let options = CleanOptions {
+            sort_keys: true,
+            ..Default::default()
+        };
+        let cleaned = notebook.clean(&options);
+
+        // sort_keys should be set on the cleaned notebook
+        assert!(cleaned.sort_keys);
+    }
+
+    #[test]
+    fn test_clean_sort_keys_default_false() {
+        let notebook = create_test_notebook();
+        let options = CleanOptions::default();
+        let cleaned = notebook.clean(&options);
+
+        // sort_keys should be false by default
+        assert!(!cleaned.sort_keys);
+    }
+
+    #[test]
+    fn test_clean_for_vcs_enables_sort_keys() {
+        let notebook = create_test_notebook();
+        let options = CleanOptions::for_vcs();
+        let cleaned = notebook.clean(&options);
+
+        // for_vcs should enable sort_keys
+        assert!(cleaned.sort_keys);
     }
 }
