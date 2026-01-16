@@ -112,6 +112,10 @@ enum Commands {
         #[arg(long)]
         remove_output_execution_counts: bool,
 
+        /// Normalize cell IDs to "cell{i}" format
+        #[arg(long)]
+        normalize_cell_ids: bool,
+
         /// Keep only these metadata keys (comma-separated)
         #[arg(long, value_delimiter = ',')]
         keep_only: Option<Vec<String>>,
@@ -206,6 +210,7 @@ where
             preserve_cell_ids,
             remove_output_metadata,
             remove_output_execution_counts,
+            normalize_cell_ids,
             keep_only,
         } => run_clean(
             &input,
@@ -219,6 +224,7 @@ where
             preserve_cell_ids,
             remove_output_metadata,
             remove_output_execution_counts,
+            normalize_cell_ids,
             keep_only,
         ),
     };
@@ -367,6 +373,7 @@ fn run_clean(
     preserve_cell_ids: bool,
     remove_output_metadata: bool,
     remove_output_execution_counts: bool,
+    normalize_cell_ids: bool,
     keep_only: Option<Vec<String>>,
 ) -> Result<(), CliError> {
     let format = NotebookFormat::from_path(input).ok_or_else(|| {
@@ -403,6 +410,7 @@ fn run_clean(
         preserve_cell_ids,
         remove_output_metadata,
         remove_output_execution_counts,
+        normalize_cell_ids,
         allowed_cell_metadata_keys: allowed_keys.clone(),
         allowed_notebook_metadata_keys: allowed_keys,
     };

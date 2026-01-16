@@ -75,6 +75,7 @@ class CleanOptions:
     preserve_cell_ids: bool
     remove_output_metadata: bool
     remove_output_execution_counts: bool
+    normalize_cell_ids: bool
     allowed_cell_metadata_keys: Optional[List[str]]
     allowed_notebook_metadata_keys: Optional[List[str]]
 
@@ -88,13 +89,14 @@ class CleanOptions:
         preserve_cell_ids: bool = False,
         remove_output_metadata: bool = False,
         remove_output_execution_counts: bool = False,
+        normalize_cell_ids: bool = False,
         allowed_cell_metadata_keys: Optional[List[str]] = None,
         allowed_notebook_metadata_keys: Optional[List[str]] = None,
     ) -> None: ...
 
     @staticmethod
     def for_vcs() -> CleanOptions:
-        """Create options for version control (removes cell metadata, execution counts, and output metadata/execution counts)."""
+        """Create options for version control (removes cell metadata, execution counts, output metadata/execution counts, and normalizes cell IDs)."""
         ...
 
     @staticmethod
@@ -253,6 +255,7 @@ def clean_notebook(
     preserve_cell_ids: bool = False,
     remove_output_metadata: bool = False,
     remove_output_execution_counts: bool = False,
+    normalize_cell_ids: bool = False,
 ) -> None:
     """Clean a notebook file.
 
@@ -268,6 +271,7 @@ def clean_notebook(
         preserve_cell_ids: Preserve cell IDs.
         remove_output_metadata: Remove metadata from outputs (ExecuteResult, DisplayData).
         remove_output_execution_counts: Remove execution counts from output results.
+        normalize_cell_ids: Normalize cell IDs to "cell{i}" format where i is the cell index.
 
     Raises:
         ValueError: If the file cannot be parsed.

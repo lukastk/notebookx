@@ -131,6 +131,10 @@ pub struct CleanOptions {
     #[pyo3(get, set)]
     pub remove_output_execution_counts: bool,
 
+    /// Normalize cell IDs to "cell{i}" format where i is the cell index.
+    #[pyo3(get, set)]
+    pub normalize_cell_ids: bool,
+
     /// Allowed cell metadata keys (None means all allowed).
     #[pyo3(get, set)]
     pub allowed_cell_metadata_keys: Option<Vec<String>>,
@@ -152,6 +156,7 @@ impl CleanOptions {
         preserve_cell_ids = false,
         remove_output_metadata = false,
         remove_output_execution_counts = false,
+        normalize_cell_ids = false,
         allowed_cell_metadata_keys = None,
         allowed_notebook_metadata_keys = None,
     ))]
@@ -165,6 +170,7 @@ impl CleanOptions {
         preserve_cell_ids: bool,
         remove_output_metadata: bool,
         remove_output_execution_counts: bool,
+        normalize_cell_ids: bool,
         allowed_cell_metadata_keys: Option<Vec<String>>,
         allowed_notebook_metadata_keys: Option<Vec<String>>,
     ) -> Self {
@@ -177,12 +183,13 @@ impl CleanOptions {
             preserve_cell_ids,
             remove_output_metadata,
             remove_output_execution_counts,
+            normalize_cell_ids,
             allowed_cell_metadata_keys,
             allowed_notebook_metadata_keys,
         }
     }
 
-    /// Create options for version control (removes cell metadata, execution counts, and output metadata/execution counts).
+    /// Create options for version control (removes cell metadata, execution counts, output metadata/execution counts, and normalizes cell IDs).
     #[staticmethod]
     fn for_vcs() -> Self {
         CleanOptions {
@@ -190,6 +197,7 @@ impl CleanOptions {
             remove_execution_counts: true,
             remove_output_metadata: true,
             remove_output_execution_counts: true,
+            normalize_cell_ids: true,
             ..Default::default()
         }
     }
@@ -206,6 +214,7 @@ impl CleanOptions {
             preserve_cell_ids: false,
             remove_output_metadata: true,
             remove_output_execution_counts: true,
+            normalize_cell_ids: false,
             allowed_cell_metadata_keys: None,
             allowed_notebook_metadata_keys: None,
         }
@@ -213,7 +222,7 @@ impl CleanOptions {
 
     fn __repr__(&self) -> String {
         format!(
-            "CleanOptions(remove_outputs={}, remove_execution_counts={}, remove_cell_metadata={}, remove_notebook_metadata={}, remove_kernel_info={}, preserve_cell_ids={}, remove_output_metadata={}, remove_output_execution_counts={})",
+            "CleanOptions(remove_outputs={}, remove_execution_counts={}, remove_cell_metadata={}, remove_notebook_metadata={}, remove_kernel_info={}, preserve_cell_ids={}, remove_output_metadata={}, remove_output_execution_counts={}, normalize_cell_ids={})",
             self.remove_outputs,
             self.remove_execution_counts,
             self.remove_cell_metadata,
@@ -222,6 +231,7 @@ impl CleanOptions {
             self.preserve_cell_ids,
             self.remove_output_metadata,
             self.remove_output_execution_counts,
+            self.normalize_cell_ids,
         )
     }
 }
@@ -237,6 +247,7 @@ impl From<&CleanOptions> for notebookx::CleanOptions {
             preserve_cell_ids: opts.preserve_cell_ids,
             remove_output_metadata: opts.remove_output_metadata,
             remove_output_execution_counts: opts.remove_output_execution_counts,
+            normalize_cell_ids: opts.normalize_cell_ids,
             allowed_cell_metadata_keys: opts
                 .allowed_cell_metadata_keys
                 .as_ref()
@@ -491,6 +502,7 @@ fn convert(
     preserve_cell_ids = false,
     remove_output_metadata = false,
     remove_output_execution_counts = false,
+    normalize_cell_ids = false,
 ))]
 #[allow(clippy::too_many_arguments)]
 fn clean_notebook(
@@ -504,6 +516,7 @@ fn clean_notebook(
     preserve_cell_ids: bool,
     remove_output_metadata: bool,
     remove_output_execution_counts: bool,
+    normalize_cell_ids: bool,
 ) -> PyResult<()> {
     let notebook = Notebook::from_file(input_path, None)?;
 
@@ -516,6 +529,7 @@ fn clean_notebook(
         preserve_cell_ids,
         remove_output_metadata,
         remove_output_execution_counts,
+        normalize_cell_ids,
         allowed_cell_metadata_keys: None,
         allowed_notebook_metadata_keys: None,
     };

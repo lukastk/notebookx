@@ -67,6 +67,10 @@ pub struct CleanOptions {
 
     /// Remove execution counts from ExecuteResult outputs.
     pub remove_output_execution_counts: bool,
+
+    /// Normalize cell IDs to "cell{i}" format where i is the cell index.
+    /// When enabled, all cells will have IDs like "cell0", "cell1", etc.
+    pub normalize_cell_ids: bool,
 }
 
 impl CleanOptions {
@@ -78,12 +82,14 @@ impl CleanOptions {
     /// Create options that remove cell metadata and execution counts, and output metadata and execution counts.
     ///
     /// This is useful for preparing notebooks for version control.
+    /// Cell IDs are normalized to "cell{i}" format for consistent diffs.
     pub fn for_vcs() -> Self {
         Self {
             remove_cell_metadata: true,
             remove_execution_counts: true,
             remove_output_metadata: true,
             remove_output_execution_counts: true,
+            normalize_cell_ids: true,
             ..Default::default()
         }
     }
@@ -103,6 +109,7 @@ impl CleanOptions {
             allowed_notebook_metadata_keys: None,
             remove_output_metadata: true,
             remove_output_execution_counts: true,
+            normalize_cell_ids: false,
         }
     }
 }
@@ -133,7 +140,8 @@ impl Notebook {
         let cells = self
             .cells
             .iter()
-            .map(|cell| clean_cell(cell, options))
+            .enumerate()
+            .map(|(index, cell)| clean_cell(cell, index, options))
             .collect();
         let metadata = clean_notebook_metadata(&self.metadata, options);
 
@@ -147,7 +155,18 @@ impl Notebook {
 }
 
 /// Clean a single cell according to the options.
-fn clean_cell(cell: &Cell, options: &CleanOptions) -> Cell {
+fn clean_cell(cell: &Cell, index: usize, options: &CleanOptions) -> Cell {
+    // Determine the new cell ID based on options
+    let compute_new_id = |original_id: &Option<String>| -> Option<String> {
+        if options.normalize_cell_ids {
+            Some(format!("cell{}", index))
+        } else if options.preserve_cell_ids {
+            original_id.clone()
+        } else {
+            None
+        }
+    };
+
     match cell {
         Cell::Code {
             source,
@@ -171,12 +190,7 @@ fn clean_cell(cell: &Cell, options: &CleanOptions) -> Cell {
             };
 
             let new_metadata = clean_cell_metadata(metadata, options);
-
-            let new_id = if options.preserve_cell_ids {
-                id.clone()
-            } else {
-                None
-            };
+            let new_id = compute_new_id(id);
 
             Cell::Code {
                 source: source.clone(),
@@ -192,11 +206,7 @@ fn clean_cell(cell: &Cell, options: &CleanOptions) -> Cell {
             id,
         } => {
             let new_metadata = clean_cell_metadata(metadata, options);
-            let new_id = if options.preserve_cell_ids {
-                id.clone()
-            } else {
-                None
-            };
+            let new_id = compute_new_id(id);
 
             Cell::Markdown {
                 source: source.clone(),
@@ -210,11 +220,7 @@ fn clean_cell(cell: &Cell, options: &CleanOptions) -> Cell {
             id,
         } => {
             let new_metadata = clean_cell_metadata(metadata, options);
-            let new_id = if options.preserve_cell_ids {
-                id.clone()
-            } else {
-                None
-            };
+            let new_id = compute_new_id(id);
 
             Cell::Raw {
                 source: source.clone(),
@@ -805,5 +811,68 @@ mod tests {
             }
             _ => panic!("Expected ExecuteResult"),
         }
+
+        // Verify for_vcs normalizes cell IDs
+        assert_eq!(cleaned.cells[0].id(), Some("cell0"));
+    }
+
+    #[test]
+    fn test_clean_normalize_cell_ids() {
+        let notebook = create_test_notebook();
+        let options = CleanOptions {
+            normalize_cell_ids: true,
+            ..Default::default()
+        };
+        let cleaned = notebook.clean(&options);
+
+        // Cell IDs should be normalized to "cell{i}" format
+        assert_eq!(cleaned.cells[0].id(), Some("cell0"));
+        assert_eq!(cleaned.cells[1].id(), Some("cell1"));
+    }
+
+    #[test]
+    fn test_clean_normalize_cell_ids_without_original_ids() {
+        let mut notebook = Notebook::new();
+        // Create cells without IDs
+        notebook.cells.push(Cell::code("x = 1"));
+        notebook.cells.push(Cell::markdown("# Header"));
+        notebook.cells.push(Cell::raw("raw content"));
+
+        let options = CleanOptions {
+            normalize_cell_ids: true,
+            ..Default::default()
+        };
+        let cleaned = notebook.clean(&options);
+
+        // Cell IDs should be normalized even when original cells had no IDs
+        assert_eq!(cleaned.cells[0].id(), Some("cell0"));
+        assert_eq!(cleaned.cells[1].id(), Some("cell1"));
+        assert_eq!(cleaned.cells[2].id(), Some("cell2"));
+    }
+
+    #[test]
+    fn test_clean_normalize_cell_ids_overrides_preserve() {
+        let notebook = create_test_notebook();
+        let options = CleanOptions {
+            normalize_cell_ids: true,
+            preserve_cell_ids: true, // This should be ignored when normalize is true
+            ..Default::default()
+        };
+        let cleaned = notebook.clean(&options);
+
+        // normalize_cell_ids takes precedence over preserve_cell_ids
+        assert_eq!(cleaned.cells[0].id(), Some("cell0"));
+        assert_eq!(cleaned.cells[1].id(), Some("cell1"));
+    }
+
+    #[test]
+    fn test_clean_for_vcs_normalizes_cell_ids() {
+        let notebook = create_test_notebook();
+        let options = CleanOptions::for_vcs();
+        let cleaned = notebook.clean(&options);
+
+        // for_vcs should normalize cell IDs
+        assert_eq!(cleaned.cells[0].id(), Some("cell0"));
+        assert_eq!(cleaned.cells[1].id(), Some("cell1"));
     }
 }
