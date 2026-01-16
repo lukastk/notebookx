@@ -1,7 +1,7 @@
 //! Notebook-level metadata structures.
 
+use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
 /// Notebook-level metadata.
 ///
@@ -20,8 +20,9 @@ pub struct NotebookMetadata {
 
     /// Additional metadata fields not explicitly modeled.
     /// This preserves any extension-specific or custom metadata.
+    /// Uses IndexMap to preserve insertion order.
     #[serde(flatten)]
-    pub extra: HashMap<String, serde_json::Value>,
+    pub extra: IndexMap<String, serde_json::Value>,
 }
 
 /// Kernel specification metadata.

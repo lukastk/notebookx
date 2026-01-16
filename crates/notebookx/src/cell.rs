@@ -1,8 +1,8 @@
 //! Cell types for Jupyter notebooks.
 
 use crate::output::{MultilineString, Output};
+use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
 /// A cell in a Jupyter notebook.
 ///
@@ -174,8 +174,9 @@ pub struct CellMetadata {
     pub name: Option<String>,
 
     /// Additional metadata fields not explicitly modeled.
+    /// Uses IndexMap to preserve insertion order.
     #[serde(flatten)]
-    pub extra: HashMap<String, serde_json::Value>,
+    pub extra: IndexMap<String, serde_json::Value>,
 }
 
 /// Scrolled state for a cell.

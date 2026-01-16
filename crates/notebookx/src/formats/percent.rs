@@ -29,7 +29,7 @@ use crate::metadata::{KernelSpec, NotebookMetadata};
 use crate::notebook::Notebook;
 use crate::output::MultilineString;
 use crate::{ParseError, SerializeError};
-use std::collections::HashMap;
+use indexmap::IndexMap;
 
 /// Options for serializing to percent format.
 #[derive(Debug, Clone, Default)]
@@ -260,7 +260,7 @@ fn default_metadata() -> NotebookMetadata {
             language: "python".to_string(),
         }),
         language_info: None,
-        extra: HashMap::new(),
+        extra: IndexMap::new(),
     }
 }
 
