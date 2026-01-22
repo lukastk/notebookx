@@ -75,7 +75,7 @@ impl NotebookFormat {
     ///
     /// * `notebook` - The notebook to serialize.
     /// * `include_header` - Whether to include the YAML header in percent format.
-    ///                      This option is ignored for ipynb format.
+    ///   This option is ignored for ipynb format.
     pub fn serialize_with_header(
         &self,
         notebook: &Notebook,
