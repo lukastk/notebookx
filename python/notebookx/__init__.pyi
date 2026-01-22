@@ -171,12 +171,18 @@ class Notebook:
         """
         ...
 
-    def to_file(self, path: str, format: Optional[Format] = None) -> None:
+    def to_file(
+        self,
+        path: str,
+        format: Optional[Format] = None,
+        no_header: bool = False,
+    ) -> None:
         """Save the notebook to a file.
 
         Args:
             path: Path to save the notebook to.
             format: Optional format. If not specified, inferred from extension.
+            no_header: If True, omit YAML header when saving to percent format.
 
         Raises:
             ValueError: If the notebook cannot be serialized.
@@ -184,11 +190,12 @@ class Notebook:
         """
         ...
 
-    def to_string(self, format: Format) -> str:
+    def to_string(self, format: Format, no_header: bool = False) -> str:
         """Serialize the notebook to a string.
 
         Args:
             format: The format to serialize to.
+            no_header: If True, omit YAML header when serializing to percent format.
 
         Returns:
             The notebook as a string.
@@ -231,6 +238,7 @@ def convert(
     output_path: str,
     from_fmt: Optional[Format] = None,
     to_fmt: Optional[Format] = None,
+    no_header: bool = False,
 ) -> None:
     """Convert a notebook between formats.
 
@@ -239,6 +247,7 @@ def convert(
         output_path: Path to save the converted notebook.
         from_fmt: Optional input format. If not specified, inferred from extension.
         to_fmt: Optional output format. If not specified, inferred from extension.
+        no_header: If True, omit YAML header when outputting to percent format.
 
     Raises:
         ValueError: If formats cannot be inferred or conversion fails.

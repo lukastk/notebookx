@@ -350,12 +350,13 @@ impl Notebook {
     /// Args:
     ///     path: Path to save the notebook to.
     ///     format: Optional format. If not specified, inferred from extension.
+    ///     no_header: If True, omit YAML header when saving to percent format.
     ///
     /// Raises:
     ///     ValueError: If the notebook cannot be serialized.
     ///     IOError: If the file cannot be written.
-    #[pyo3(signature = (path, format = None))]
-    fn to_file(&self, path: &str, format: Option<Format>) -> PyResult<()> {
+    #[pyo3(signature = (path, format = None, no_header = false))]
+    fn to_file(&self, path: &str, format: Option<Format>, no_header: bool) -> PyResult<()> {
         let path_buf = PathBuf::from(path);
 
         let fmt = match format {
@@ -369,7 +370,7 @@ impl Notebook {
         };
 
         let content = fmt
-            .serialize(&self.inner)
+            .serialize_with_header(&self.inner, !no_header)
             .map_err(|e| PyValueError::new_err(format!("Failed to serialize: {}", e)))?;
 
         std::fs::write(&path_buf, content)
@@ -382,15 +383,17 @@ impl Notebook {
     ///
     /// Args:
     ///     format: The format to serialize to.
+    ///     no_header: If True, omit YAML header when serializing to percent format.
     ///
     /// Returns:
     ///     The notebook as a string.
     ///
     /// Raises:
     ///     ValueError: If the notebook cannot be serialized.
-    fn to_string(&self, format: Format) -> PyResult<String> {
+    #[pyo3(signature = (format, no_header = false))]
+    fn to_string(&self, format: Format, no_header: bool) -> PyResult<String> {
         let fmt: notebookx::NotebookFormat = format.into();
-        fmt.serialize(&self.inner)
+        fmt.serialize_with_header(&self.inner, !no_header)
             .map_err(|e| PyValueError::new_err(format!("Failed to serialize: {}", e)))
     }
 
@@ -473,20 +476,22 @@ pyo3::create_exception!(_notebookx, NotebookError, pyo3::exceptions::PyException
 ///     output_path: Path to save the converted notebook.
 ///     from_fmt: Optional input format. If not specified, inferred from extension.
 ///     to_fmt: Optional output format. If not specified, inferred from extension.
+///     no_header: If True, omit YAML header when outputting to percent format.
 ///
 /// Raises:
 ///     ValueError: If formats cannot be inferred or conversion fails.
 ///     IOError: If files cannot be read or written.
 #[pyfunction]
-#[pyo3(signature = (input_path, output_path, from_fmt = None, to_fmt = None))]
+#[pyo3(signature = (input_path, output_path, from_fmt = None, to_fmt = None, no_header = false))]
 fn convert(
     input_path: &str,
     output_path: &str,
     from_fmt: Option<Format>,
     to_fmt: Option<Format>,
+    no_header: bool,
 ) -> PyResult<()> {
     let notebook = Notebook::from_file(input_path, from_fmt)?;
-    notebook.to_file(output_path, to_fmt)?;
+    notebook.to_file(output_path, to_fmt, no_header)?;
     Ok(())
 }
 
@@ -550,7 +555,7 @@ fn clean_notebook(
 
     let cleaned = notebook.clean(Some(&options));
     let output = output_path.unwrap_or(input_path);
-    cleaned.to_file(output, None)?;
+    cleaned.to_file(output, None, false)?;
 
     Ok(())
 }

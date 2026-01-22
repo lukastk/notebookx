@@ -68,6 +68,33 @@ impl NotebookFormat {
             NotebookFormat::Percent => percent::serialize(notebook),
         }
     }
+
+    /// Serialize a notebook to a string in this format with options.
+    ///
+    /// # Arguments
+    ///
+    /// * `notebook` - The notebook to serialize.
+    /// * `include_header` - Whether to include the YAML header in percent format.
+    ///                      This option is ignored for ipynb format.
+    pub fn serialize_with_header(
+        &self,
+        notebook: &Notebook,
+        include_header: bool,
+    ) -> Result<String, SerializeError> {
+        match self {
+            NotebookFormat::Ipynb => ipynb::serialize(notebook),
+            NotebookFormat::Percent => {
+                let options = percent::PercentOptions {
+                    header_style: if include_header {
+                        percent::HeaderStyle::Full
+                    } else {
+                        percent::HeaderStyle::None
+                    },
+                };
+                percent::serialize_with_options(notebook, &options)
+            }
+        }
+    }
 }
 
 impl std::fmt::Display for NotebookFormat {

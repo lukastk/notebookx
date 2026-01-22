@@ -65,6 +65,10 @@ enum Commands {
         /// Remove metadata during conversion
         #[arg(long)]
         strip_metadata: bool,
+
+        /// Omit YAML header when outputting to percent format
+        #[arg(long)]
+        no_header: bool,
     },
 
     /// Clean a notebook (remove outputs, metadata, etc.)
@@ -194,6 +198,7 @@ where
             to_fmt,
             strip_outputs,
             strip_metadata,
+            no_header,
         } => run_convert(
             &input,
             &output,
@@ -201,6 +206,7 @@ where
             to_fmt,
             strip_outputs,
             strip_metadata,
+            no_header,
         ),
         Commands::Clean {
             input,
@@ -331,6 +337,7 @@ fn run_convert(
     to_fmt: Option<Format>,
     strip_outputs: bool,
     strip_metadata: bool,
+    no_header: bool,
 ) -> Result<(), CliError> {
     let input_format = infer_format(input, from_fmt)?;
     let output_format = infer_format(output, to_fmt)?;
@@ -357,7 +364,7 @@ fn run_convert(
     };
 
     let output_content = output_format
-        .serialize(&notebook)
+        .serialize_with_header(&notebook, !no_header)
         .map_err(|e| CliError::Serialize(e.to_string()))?;
 
     write_content(output, &output_content)?;
